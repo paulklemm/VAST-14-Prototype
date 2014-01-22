@@ -1,0 +1,23 @@
+{
+  "name": "vis14",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~3.4.8",
+    "socket.io": "~0.9.16"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Powernap/vis14.git"
+  },
+  "author": "Paul Klemm",
+  "license": "None",
+  "bugs": {
+    "url": "https://github.com/Powernap/vis14/issues"
+  }
+}
