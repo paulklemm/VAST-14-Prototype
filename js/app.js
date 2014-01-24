@@ -2,8 +2,10 @@
 function App(){
 	this._data = undefined;
 	this._crossfilter = undefined;
-	this.loadDataAsync();
-	//this.constructCrossfilterDataset();
+	// Note: Bind Method binds this element to the method call, so 'this'
+	// will refer to the object, not the window element
+	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
+	this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
 };
 
 App.prototype.loadDataAsync = function(callback) {
