@@ -2,14 +2,42 @@
 function App(){
 	this._data = undefined;
 	this._crossfilter = undefined;
+	this._groups = undefined;
 	// Note: Bind Method binds this element to the method call, so 'this'
 	// will refer to the object, not the window element
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
-	this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
+	//this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
+	this.loadDataAsync(this.dataLoaded.bind(this));
 };
 
+App.prototype.dataLoaded = function(){
+	this.constructCrossfilterDataset();
+	this.loadGroupDataAsync(ui.createSidebar);
+	ui.dragging.attachDragStart(); // Bug - doesnt work here :(
+}
+
+App.prototype.loadGroupDataAsync = function(callback) {
+	var filePath = "data/ship-data/data/shipdata/groups-S2.json";
+	var app = this;
+
+	d3.json(filePath, function(groups){
+		groupArray = [];
+		for (var key in groups){
+			var dataElement = {};
+			dataElement.name = key;
+			dataElement.links = groups[key];
+			groupArray.push(dataElement);
+		}
+		app._groups = groupArray; // set group data
+
+		// Execute Callback if defined
+		if (callback != undefined)
+			callback(groupArray);
+	});
+}
+
 App.prototype.loadDataAsync = function(callback) {
-	filePath = 'data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json';
+	var filePath = 'data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json';
 	var app = this; // Reference this objects, since it wont be available in the callback
 	d3.json(filePath, function(data){
 		app._data = data; // set data
@@ -27,6 +55,7 @@ App.prototype.constructCrossfilterDataset = function(){
 		console.error(this);
 		return;
 	}
+	console.log(this);
 	// Construct array which crossfilter accepts. It will look like this:
 	// [
 	// 	{date: "2011-11-14T16:17:54Z", quantity: 2, total: 190, tip: 100, type: "tab"},

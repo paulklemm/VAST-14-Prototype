@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html>
+<style>
+.over {
+	border: 3px dashed #000;
+}
+</style>
 <head>
 	<meta charset='utf-8'>
 	<title>VIS'14 Prototype</title>
@@ -12,31 +17,22 @@
 	<div class="page-header">
 		<h1>VIS'14 Prototype</h1>
 	</div>
-	<button type="submit" class="btn btn-default" id="btnDoStuff">Do Stuff</button>
 </div>
 
 <div class="container">
-	<div class="well">
-		<ul class="list-group">
-			<li class="list-group-item"><a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#demo">Group 1</a>
-				<div id="demo" class="collapse in">
-					<ul class="list-group">
-						<!-- <li class="nav-header">List header</li> -->
-						<li class="list-group-item"><a href="#">Home</a></li>
-						<li class="list-group-item"><a href="#">Library</a></li>
-					</ul>
-				</div>
-			</li>
-			<li class="list-group-item"><a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#demo2">Group 2</a>
-				<div id="demo2" class="collapse in">
-					<ul class="list-group">
-						<!-- <li class="nav-header">List header</li> -->
-						<li class="list-group-item"><a href="#">Home</a></li>
-						<li class="list-group-item"><a href="#">Library</a></li>
-					</ul>
-				</div>
-			</li>
-		</ul>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="well">
+				<ul class="list-group">
+					
+				</ul>
+			</div>
+		</div>
+		<div class="col-md-8">
+		<div class="well" id="canvas" style="min-height:300px">
+			Canvas
+		</div>
+		</div>
 	</div>
 </div> <!-- /container -->
 
@@ -51,7 +47,6 @@
 <script>
 
 var myApp = new App();
-ui.makeSidebarCollapsible();
 
 </script>
 </body>
