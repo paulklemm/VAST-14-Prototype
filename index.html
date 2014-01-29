@@ -3,8 +3,25 @@
 <style>
 .over {
 	border: 3px dashed #000;
+	color:red;
+}
+
+.viscontainer {
+	min-height:50px;
+	min-width: 75px;
+}
+
+.viscontainer div.panel-heading{
+	cursor: move;
+}
+
+*[draggable=true] {
+	-moz-user-select:none;
+	-khtml-user-drag: element;
+	cursor: move;
 }
 </style>
+<link href="bower_components/jquery-ui/themes/base/jquery-ui.css" rel="stylesheet">
 <head>
 	<meta charset='utf-8'>
 	<title>VIS'14 Prototype</title>
@@ -29,14 +46,15 @@
 			</div>
 		</div>
 		<div class="col-md-8">
-		<div class="well" id="canvas" style="min-height:300px">
-			Canvas
-		</div>
+			<div class="well" id="canvas" style="min-height:600px">
+				Canvas Area
+			</div>
 		</div>
 	</div>
 </div> <!-- /container -->
 
 <script src="bower_components/jquery/jquery.js"></script>
+<script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
 <script src="bower_components/d3/d3.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/crossfilter/crossfilter.js"></script>

@@ -44,8 +44,8 @@ ui.createSidebar = function() {
 
 	listEnter.append('div')
 		.attr('id', function(d){ return d.name})
-		// .attr('class', 'collapse in')
 		.attr('class', 'collapse')
+		// .attr('class', 'collapse in')
 		.append('ul')
 			.selectAll('li')
 			.data(function(d) {return d.links})
@@ -53,13 +53,58 @@ ui.createSidebar = function() {
 				.attr('class', 'list-group-item attribute')
 				.attr('draggable', 'true')
 				.text(function(d) { return myApp._data[d].description.detail; })
+
+	// Add Drag and Drop functionality to the Elements
+	ui.dragging.attachDragLogic();
+}
+
+ui.createContainer = function(e, id) {
+	// Panel looks like this
+	// <div class="panel viscontainer panel-default">
+	//   <div class="panel-heading">Panel heading without title</div>
+	//   <div class="panel-body">
+	//     Panel content
+	//   </div>
+	// </div>
+	
+	var panel = document.createElement('div');
+	var panelHeading = document.createElement('div');
+	var panelBody = document.createElement('div');
+	// Classes
+	panel.setAttribute('class', 'viscontainer panel panel-default');
+	panelHeading.setAttribute('class', 'panel-heading');
+	panelBody.setAttribute('class', 'panel-body');
+
+	// Text
+	panelHeading.textContent = 'Heading of ' + id;
+	panelBody.textContent = 'Body of ' + id;
+	// Append
+	panel.appendChild(panelHeading);
+	panel.appendChild(panelBody);
+	document.getElementById('canvas').appendChild(panel);
+	// Put it into the right position
+	panel.style.position = "absolute";
+	var correctedX = e.layerX - ($(panel).width() / 2)
+	var correctedY = e.layerY - ($(panel).height() / 2)
+	panel.style.left = correctedX + 'px';
+	panel.style.top = correctedY + 'px';
+	console.log("Width " + $(panel).width() + " Height " + $(panel).height());
+	// make it dragable and resizable
+	$('.viscontainer')
+		.draggable( {containment: "parent", handle: "div.panel-heading"} )
+		.resizable( {containment: "parent"} );
 }
 
 /* +++++++++++++++++++++++++++++++ */
 // http://www.html5rocks.com/de/tutorials/dnd/basics/
 
+ui.dragging.draggedElementID = null;
+
 ui.dragging.handleDragStart = function(e) {
-	this.style.opacity = '0.4';  // this / e.target is the source node.
+	//this.style.opacity = '0.4';  // this / e.target is the source node.
+
+	// Store ID of Klicked Element
+	ui.dragging.draggedElementID = this.__data__;
 }
 
 ui.dragging.handleDragOver = function(e) {
@@ -72,8 +117,6 @@ ui.dragging.handleDragOver = function(e) {
 
 ui.dragging.handleDragEnter = function(e) {
 	// this / e.target is the current hover target.
-	console.log("handleDragEnter");
-	console.log(this);
 	this.classList.add('over');
 }
 
@@ -82,33 +125,36 @@ ui.dragging.handleDragLeave = function(e) {
 }
 
 ui.dragging.handleDrop = function(e) {
-  // this / e.target is current target element.
-  if (e.stopPropagation) {
-    e.stopPropagation(); // stops the browser from redirecting.
-  }
-  // See the section on the DataTransfer object.
-  return false;
+	// this / e.target is current target element.
+	if (e.stopPropagation) {
+		e.stopPropagation(); // stops the browser from redirecting.
+	}
+	console.log(ui.dragging.draggedElementID + " dropped on x: " + e.x + ", y:" + e.y + "");
+	ui.createContainer(e, ui.dragging.draggedElementID);
+	// See the section on the DataTransfer object.
+	return false;
 }
 
 ui.dragging.handleDragEnd = function(e) {
-  // this/e.target is the source node.
-  [].forEach.call(ui.dragging.cols, function (col) {
-    col.classList.remove('over');
-  });
+	// this/e.target is the source node.
+	// [].forEach.call(ui.dragging.cols, function (col) {
+	// 	col.classList.remove('over');
+	// });
+	document.querySelector('.well#canvas').classList.remove('over');
 }
 
 
-ui.dragging.attachDragStart = function(){
-	console.log("Attached Dragging Logic");
-	ui.dragging.cols = document.querySelectorAll('li.attribute');
-	[].forEach.call(ui.dragging.cols, function(col) {
+ui.dragging.attachDragLogic = function(){
+
+	var attributes = document.querySelectorAll('li.attribute');
+	var canvas = document.querySelector('.well#canvas');
+	canvas.addEventListener('dragenter', ui.dragging.handleDragEnter, false);
+	canvas.addEventListener('dragover', ui.dragging.handleDragOver, false);
+	canvas.addEventListener('dragleave', ui.dragging.handleDragLeave, false);
+	canvas.addEventListener('drop', ui.dragging.handleDrop, false);
+	
+	[].forEach.call(attributes, function(col) {
 		col.addEventListener('dragstart', ui.dragging.handleDragStart, false);
-		col.addEventListener('dragenter', ui.dragging.handleDragEnter, false);
-		col.addEventListener('dragover', ui.dragging.handleDragOver, false);
-		col.addEventListener('dragleave', ui.dragging.handleDragLeave, false);
-		col.addEventListener('drop', ui.dragging.handleDrop, false);
 		col.addEventListener('dragend', ui.dragging.handleDragEnd, false);
-	//[].forEach.call(ui.dragging.cols, function(col) {
-	//	col.addEventListener('dragstart', ui.dragging.handleDragStart, false);
 	});
 }

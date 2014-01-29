@@ -13,7 +13,6 @@ function App(){
 App.prototype.dataLoaded = function(){
 	this.constructCrossfilterDataset();
 	this.loadGroupDataAsync(ui.createSidebar);
-	ui.dragging.attachDragStart(); // Bug - doesnt work here :(
 }
 
 App.prototype.loadGroupDataAsync = function(callback) {
@@ -55,7 +54,6 @@ App.prototype.constructCrossfilterDataset = function(){
 		console.error(this);
 		return;
 	}
-	console.log(this);
 	// Construct array which crossfilter accepts. It will look like this:
 	// [
 	// 	{date: "2011-11-14T16:17:54Z", quantity: 2, total: 190, tip: 100, type: "tab"},
