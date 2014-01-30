@@ -3,6 +3,7 @@ function App(){
 	this._data = undefined;
 	this._crossfilter = undefined;
 	this._groups = undefined;
+	this._visualizations = [];
 	// Note: Bind Method binds this element to the method call, so 'this'
 	// will refer to the object, not the window element
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
@@ -44,6 +45,14 @@ App.prototype.loadDataAsync = function(callback) {
 		if (callback != undefined)
 			callback(data);
 	});
+}
+
+App.prototype.createMatchingVisualization = function(detail) {
+	var type = this._data[detail.id].description.dataType;
+	if (type == 'dichotomous' || type == 'ordinal')
+		vis = new Barchart(detail.containerId, detail.id);
+	detail.visualization = vis;
+	myApp._visualizations.push(detail);
 }
 
 // Crossfilter Library needs it's data in a specific format

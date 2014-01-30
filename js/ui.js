@@ -1,6 +1,7 @@
 var ui = {};
 
 ui.dragging = {};
+ui.resizing = {};
 // https://stackoverflow.com/questions/18660269/collapsible-responsive-sidebar-menu-with-jquery-and-bootstrap-3
 // https://stackoverflow.com/questions/15391325/how-to-collapse-expand-list-using-bootstrap-jquery
 ui.createSidebar = function() {
@@ -44,8 +45,8 @@ ui.createSidebar = function() {
 
 	listEnter.append('div')
 		.attr('id', function(d){ return d.name})
-		.attr('class', 'collapse')
-		// .attr('class', 'collapse in')
+		// .attr('class', 'collapse')
+		.attr('class', 'collapse in')
 		.append('ul')
 			.selectAll('li')
 			.data(function(d) {return d.links})
@@ -70,14 +71,16 @@ ui.createContainer = function(e, id) {
 	var panel = document.createElement('div');
 	var panelHeading = document.createElement('div');
 	var panelBody = document.createElement('div');
+	var containerId = 'vis' + myApp._visualizations.length;
 	// Classes
 	panel.setAttribute('class', 'viscontainer panel panel-default');
+	panel.setAttribute('id', containerId); // at the end of the method we register the vis to this variable
 	panelHeading.setAttribute('class', 'panel-heading');
 	panelBody.setAttribute('class', 'panel-body');
 
 	// Text
 	panelHeading.textContent = 'Heading of ' + id;
-	panelBody.textContent = 'Body of ' + id;
+	//panelBody.textContent = 'Body of ' + id;
 	// Append
 	panel.appendChild(panelHeading);
 	panel.appendChild(panelBody);
@@ -88,11 +91,33 @@ ui.createContainer = function(e, id) {
 	var correctedY = e.layerY - ($(panel).height() / 2)
 	panel.style.left = correctedX + 'px';
 	panel.style.top = correctedY + 'px';
-	console.log("Width " + $(panel).width() + " Height " + $(panel).height());
 	// make it dragable and resizable
 	$('.viscontainer')
 		.draggable( {containment: "parent", handle: "div.panel-heading"} )
-		.resizable( {containment: "parent"} );
+		.resizable( {containment: "parent", 
+			resize: ui.resizing.resize} );
+
+	// Register Container
+	var detail = {};
+	detail.id = id;
+	detail.containerId = '#' + containerId;
+	myApp.createMatchingVisualization(detail);
+}
+
+/* +++++++++++++++++++++++++++++++ */
+
+ui.resizing.resize = function(event, _ui) {
+	// https://groups.google.com/forum/#!topic/d3-js/mTBxTLi0q1o
+	var elementId = _ui.element.attr('id');
+	// HACK: Height is calculated wrong in the panel-body
+	// var height = $("#" + elementId + ' .panel-body').height();
+	// var width = $("#" + elementId + ' .panel-body').width();
+	var width = $("#" + elementId).width();
+	var height = _ui.size.height - 80;
+	d3.select("#" + elementId + " svg")
+		.attr("width", width)
+		.attr("height", height)
+		.attr("preserveAspectRatio", "none");
 }
 
 /* +++++++++++++++++++++++++++++++ */
@@ -103,7 +128,7 @@ ui.dragging.draggedElementID = null;
 ui.dragging.handleDragStart = function(e) {
 	//this.style.opacity = '0.4';  // this / e.target is the source node.
 
-	// Store ID of Klicked Element
+	// Store ID of clicked element
 	ui.dragging.draggedElementID = this.__data__;
 }
 
@@ -129,7 +154,6 @@ ui.dragging.handleDrop = function(e) {
 	if (e.stopPropagation) {
 		e.stopPropagation(); // stops the browser from redirecting.
 	}
-	console.log(ui.dragging.draggedElementID + " dropped on x: " + e.x + ", y:" + e.y + "");
 	ui.createContainer(e, ui.dragging.draggedElementID);
 	// See the section on the DataTransfer object.
 	return false;
