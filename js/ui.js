@@ -61,7 +61,8 @@ ui.createSidebar = function() {
 
 ui.createContainer = function(e, id) {
 	// Panel looks like this
-	// <div class="panel viscontainer panel-default">
+	// <div class="remove glyphicon glyphicon-remove">
+	//   <div class="remove_element icon-remove"></div>
 	//   <div class="panel-heading">Panel heading without title</div>
 	//   <div class="panel-body">
 	//     Panel content
@@ -71,17 +72,21 @@ ui.createContainer = function(e, id) {
 	var panel = document.createElement('div');
 	var panelHeading = document.createElement('div');
 	var panelBody = document.createElement('div');
+	var removeButton = document.createElement('div');
 	var containerId = 'vis' + myApp._visualizations.length;
 	// Classes
+	// Append the little close Button und the top right corner of each element
 	panel.setAttribute('class', 'viscontainer panel panel-default');
 	panel.setAttribute('id', containerId); // at the end of the method we register the vis to this variable
 	panelHeading.setAttribute('class', 'panel-heading');
 	panelBody.setAttribute('class', 'panel-body');
+	removeButton.setAttribute('class', 'remove glyphicon glyphicon-remove')
 
 	// Text
 	panelHeading.textContent = 'Heading of ' + id;
 	//panelBody.textContent = 'Body of ' + id;
 	// Append
+	panel.appendChild(removeButton);
 	panel.appendChild(panelHeading);
 	panel.appendChild(panelBody);
 	document.getElementById('canvas').appendChild(panel);
@@ -97,6 +102,12 @@ ui.createContainer = function(e, id) {
 		.resizable( {containment: "parent", 
 			resize: ui.resizing.resize} );
 
+	$(removeButton).on("click", function(e) {
+		// Get Container ID
+		var id = $(this).parent().attr('id');
+		$(this).parent().remove();
+		myApp.removeRegisteredVisualization('#' + id);
+	})
 	// Register Container
 	var detail = {};
 	detail.id = id;

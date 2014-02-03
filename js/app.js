@@ -55,6 +55,12 @@ App.prototype.createMatchingVisualization = function(detail) {
 	myApp._visualizations.push(detail);
 }
 
+App.prototype.removeRegisteredVisualization = function(containerId) {
+		for (var i = 0; i < this._visualizations.length; i++)
+			if (containerId == this._visualizations[i]['containerId'])
+				this._visualizations.splice(i, 1);
+}
+
 // Crossfilter Library needs it's data in a specific format
 // See [Reference](https://github.com/square/crossfilter/wiki/API-Reference) for details
 App.prototype.constructCrossfilterDataset = function(){
