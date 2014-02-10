@@ -9,7 +9,8 @@ function Barchart(containerId, variable){
 // Resize: https://groups.google.com/forum/#!topic/d3-js/mTBxTLi0q1o
 
 Barchart.prototype.createDataset = function(){
-	var data = myApp._data[this._variable];
+
+  var data = myApp._data[this._variable];
 	var displayData = [];
 	//displayData.names = [];
 	//displayData.frequency = [];
@@ -63,33 +64,80 @@ Barchart.prototype.create = function(){
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  
-    // x.domain(data.map(function(d) { return d.letter; }));
-    // y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-    x.domain(this._displayData.map(function(d) { return d.name; }));
-    y.domain([0, d3.max(this._displayData, function(d) { return d.frequency; })]);
+  // x.domain(data.map(function(d) { return d.letter; }));
+  // y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+  x.domain(this._displayData.map(function(d) { return d.name; }));
+  y.domain([0, d3.max(this._displayData, function(d) { return d.frequency; })]);
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-      .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end");
-        // .text("Frequency");
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end");
+      // .text("Frequency");
 
-    svg.selectAll(".bar")
-        .data(this._displayData)
-      .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", function(d) { return x(d.name); })
-        .attr("width", x.rangeBand())
-        .attr("y", function(d) { return y(d.frequency); })
-        .attr("height", function(d) { return height - y(d.frequency); });
+  var enter = svg.selectAll(".bar").data(this._displayData).enter();
+  enter.append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.name); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.frequency); })
+      .attr("height", function(d) { return height - y(d.frequency); });
+
+  var foreignObject = enter.append("foreignObject")
+    .attr("x", function(d) { return x(d.name); })
+    .attr("id", function(d, i) { return 'renderWindow_' + d.name; })
+    .attr("width", x.rangeBand())
+    .attr("y", function(d) { return y(d.frequency); })
+    .attr("height", function(d) { return height - y(d.frequency); });
+
+
+  // Request Render Window
+  var elementList = {};
+  var data = myApp._data[this._variable];
+  for (var i in data.data) {
+    var currentElement = data.data[i];
+    if (!elementList.hasOwnProperty(currentElement))
+      elementList[currentElement] = [];
+    elementList[currentElement].push(myApp._data['zz_nr'].data[i]);
+  }
+  console.log(foreignObject);
+  console.log("foreignObject[0].length" + foreignObject[0].length);
+  for (var i = 0; i < foreignObject[0].length; i++) {
+    myApp.calculateMean(elementList[foreignObject[0][i].__data__.name], foreignObject[0][i].id);
+    
+
+
+
+
+    // myApp._serverCommunication.getMeanShapeAsync(elementList[foreignObject[0][i].__data__.name], function(meanShape){ 
+    //   // console.log("RenderWindowID: " + '#' + foreignObject[0][i].id);
+
+    //   console.log(foreignObject);
+    //   console.log(foreignObject[0][i]);
+    //   myRenderer = new Renderer('#' + foreignObject[0][i].id, JSON.parse(meanShape)); 
+    // });
+  }
+  // var idList = {};
+  // var filterByDisplayedVariable = myApp._crossfilter.dimension(function (d) {return d[this._variable]});
+  // for (var i in this._displayData) {
+  //   filterByDisplayedVariable.filterAll(); // reset Filter
+  //   var currentValue = this._displayData[i].name;
+  //   idList[currentValue] = [];
+  //   filterByDisplayedVariable.filter(currentValue);
+  //   var allElementsOfValue = filterByDisplayedVariable.top(Infinity);
+  //   for (var j in allElementsOfValue)
+  //     idList[currentValue].push(allElementsOfValue[j]['zz_nr']);
+  //   // idList[this._displayData[i].name];
+  // }
+  // //myApp._serverCommunication.getMeanShapeAsync(elements, function())
+
 }

@@ -4,6 +4,7 @@ function App(){
 	this._crossfilter = undefined;
 	this._groups = undefined;
 	this._visualizations = [];
+	this._serverCommunication = new ServerCommunication('http://localhost:8081');
 	// Note: Bind Method binds this element to the method call, so 'this'
 	// will refer to the object, not the window element
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
@@ -59,6 +60,15 @@ App.prototype.removeRegisteredVisualization = function(containerId) {
 		for (var i = 0; i < this._visualizations.length; i++)
 			if (containerId == this._visualizations[i]['containerId'])
 				this._visualizations.splice(i, 1);
+}
+
+App.prototype.calculateMean = function(elements, domId) {
+	console.log("Calculating Mean for domId " + domId);
+	this._serverCommunication.getMeanShapeAsync(elements, domId, function(result) {
+		console.log("Got result for DOM ID " + result.domId);
+		// Create Renderer
+		var myRenderer = new Renderer('#' + result.domId, result.mean); 
+	});
 }
 
 // Crossfilter Library needs it's data in a specific format

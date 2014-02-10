@@ -5,7 +5,9 @@
   "main": "server.js",
   "dependencies": {
     "express": "~3.4.8",
-    "socket.io": "~0.9.16"
+    "socket.io": "~0.9.16",
+    "three": "~0.58.10",
+    "graceful-fs": "~2.0.1"
   },
   "devDependencies": {},
   "scripts": {

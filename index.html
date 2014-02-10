@@ -1,74 +1,7 @@
 <!DOCTYPE html>
 <html>
-<style>
-.over {
-	border: 3px dashed #000;
-	color:red;
-}
-
-.container-full {
-	margin: 0 auto;
-	width: 90%;
-}
-
-svg {
-	/*background-color: gray;*/
-}
-
-.viscontainer {
-	min-height:300px;
-	min-width: 400px;
-}
-
-.viscontainer div.panel-heading{
-	cursor: move;
-}
-
-*[draggable=true] {
-	-moz-user-select:none;
-	-khtml-user-drag: element;
-	cursor: move;
-}
-
-/* Remove-Button of every Vis-Element */
-.remove {
-	float: right;
-	margin-top: 15px;
-	margin-right: 15px;
-	cursor: pointer;
-	opacity: .3;
-}
-
-.remove:hover{
-	opacity: .8;
-}
-
-/* Bar Chart */
-.bar {
-	fill: steelblue;
-}
-
-.bar:hover {
-	fill: brown;
-}
-
-.axis {
-	font: 10px sans-serif;
-}
-
-.axis path,
-.axis line {
-	fill: none;
-	stroke: #000;
-	shape-rendering: crispEdges;
-}
-
-.x.axis path {
-	display: none;
-}
-
-</style>
 <link href="bower_components/jquery-ui/themes/base/jquery-ui.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
 <head>
 	<meta charset='utf-8'>
 	<title>VIS'14 Prototype</title>
@@ -93,9 +26,7 @@ svg {
 			</div>
 		</div>
 		<div class="col-md-8">
-			<div class="well" id="canvas" style="min-height:1000px">
-				Canvas Area
-			</div>
+			<div class="well" id="canvas" style="min-height:1000px"></div>
 		</div>
 	</div>
 </div> <!-- /container -->
@@ -105,10 +36,15 @@ svg {
 <script src="bower_components/d3/d3.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/crossfilter/crossfilter.js"></script>
+<script src="bower_components/threejs/build/three.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/app.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/ServerCommunication.js"></script>
 <script src="js/vis/barchart.js"></script>
+<script src="js/webgl/three/TrackballControls.js"></script>
+<script src="js/webgl/three/STLLoader.js"></script>
+<script src="js/webgl/renderer.js"></script>
 
 <script>
 
