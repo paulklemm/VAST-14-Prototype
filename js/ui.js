@@ -83,7 +83,7 @@ ui.createContainer = function(e, id) {
 	removeButton.setAttribute('class', 'remove glyphicon glyphicon-remove')
 
 	// Text
-	panelHeading.textContent = 'Heading of ' + id;
+	panelHeading.textContent = myApp._data[id].description.detail;
 	//panelBody.textContent = 'Body of ' + id;
 	// Append
 	panel.appendChild(removeButton);

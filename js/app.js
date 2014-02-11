@@ -67,7 +67,7 @@ App.prototype.calculateMean = function(elements, domId) {
 	this._serverCommunication.getMeanShapeAsync(elements, domId, function(result) {
 		console.log("Got result for DOM ID " + result.domId);
 		// Create Renderer
-		var myRenderer = new Renderer('#' + result.domId, result.mean); 
+		var myRenderer = new Renderer(result.domId, result.mean); 
 	});
 }
 

@@ -13,7 +13,7 @@ filedata = fs.readFileSync('./node_modules/three/examples/js/loaders/STLLoader.j
 eval(filedata)
 
 // Disable Debug Logging
-io.set('log level', 1);
+// io.set('log level', 1);
 
 function startServer() {
 	loadAllMeshesAsync(startListening);
@@ -87,6 +87,15 @@ var getMeshFileAsync = function(filename, callback) {
 	});
 }
 
+var getSHIPDatasetAsync = function(callback) {
+	fs.readFile('./data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json', 'utf8', function (err,data) {
+		if (err)
+			return console.log(err);
+		else
+			callback(JSON.parse(data));
+	});
+}
+
 var getMeshFileNamesAsync = function(callback) {
 	fs.readdir('./data/stl/', function(err, files) {
 		if (err)
@@ -105,21 +114,35 @@ var getMeshFileNamesAsync = function(callback) {
 
 // Mesh Processing
 var loadAllMeshesAsync = function(callback) {
-	getMeshFileNamesAsync(function(files) {
-		counter = 0; // Keeps track on how many files 
-		allMeshes = {};
-		var loader = new THREE.STLLoader();
-		for (var i = 0; i < files.length; i++) {
-		// for (var i = 0; i < 100; i++) {
-			getMeshFileAsync(files[i], function(data, filename){
-				allMeshes[filename.split('_MESH_COR_IS.')[0]] = loader.parseASCII(data);
-				counter = counter + 1;
-				console.log(counter + "/" + files.length + " meshes parsed");
-				if (counter == files.length)
-				// if (counter == 100)
-					callback();
-			});
-		}
+	// Get SHIP Dataset to know which subjects need to be loaded
+	getSHIPDatasetAsync(function(ship) {
+		// Convert to Index Dataset
+		var validIds = {};
+		for (var i = 0; i < ship['zz_nr'].data.length; i++)
+			validIds[ship['zz_nr'].data[i]] = true;
+		
+		getMeshFileNamesAsync(function(files) {
+			// preprocess files array to only include meshes needed
+			validFiles = [];
+			for (var i = 0; i < files.length; i++)
+				if (validIds.hasOwnProperty(files[i].split('_MESH_COR_IS.')[0]))
+					validFiles.push(files[i]);
+			files = validFiles;
+			
+			counter = 0; // Keeps track on how many files 
+			allMeshes = {};
+			var loader = new THREE.STLLoader();
+			for (var i = 0; i < files.length; i++) {
+				getMeshFileAsync(files[i], function(data, filename){
+					allMeshes[filename.split('_MESH_COR_IS.')[0]] = loader.parseASCII(data);
+					counter = counter + 1;
+					console.log(counter + "/" + files.length + " meshes parsed");
+					if (counter == files.length)
+					// if (counter == 100)
+						callback();
+				});
+			}
+		});
 	});
 }
 

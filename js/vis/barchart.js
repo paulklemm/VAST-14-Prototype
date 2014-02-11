@@ -2,13 +2,12 @@
 function Barchart(containerId, variable){
   this._containerId = containerId;
   this._variable = variable;
-  this._displayData = this.createDataset();
+  this._displayData = this.createDataset(true);
   this.create();
 }
 
 // Resize: https://groups.google.com/forum/#!topic/d3-js/mTBxTLi0q1o
-
-Barchart.prototype.createDataset = function(){
+Barchart.prototype.createDataset = function(removeErroreVariables){
 
   var data = myApp._data[this._variable];
 	var displayData = [];
@@ -30,7 +29,15 @@ Barchart.prototype.createDataset = function(){
 		}
 	}
 
-	return displayData;
+  if (removeErroreVariables)
+  errorVariables = [];
+  for (var i = 0; i < displayData.length; i++)
+    if (parseInt(displayData[i].name) > 500){
+      displayData.splice(i, 1);
+      i = i - 1;
+    }
+  
+  return displayData;
 }
 
 Barchart.prototype.create = function(){
@@ -47,8 +54,12 @@ Barchart.prototype.create = function(){
 
   var xAxis = d3.svg.axis()
       .scale(x)
-      .orient("bottom");
-
+      .orient("bottom")
+      // .tickFormat(function(d) { console.log(myApp._data[this._variable]); }.bind(this));
+      .tickFormat(function(d) { return myApp._data[this._variable].description.dictionary[d] }.bind(this));
+      //data.description.dictionary[currentElement]
+// myApp._data[this._variable]
+// data.description.dictionary[currentElement]
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left");
@@ -58,6 +69,7 @@ Barchart.prototype.create = function(){
   var actualWidth = width + margin.left + margin.right;
   var actualHeight = height + margin.top + margin.bottom;
   var svg = d3.select(this._containerId).append("svg")
+      .attr("xmlns", "http://www.w3.org/2000/svg")
       .attr("viewBox", "0 0 " + actualWidth + " " + actualHeight)
     	.attr("width", actualWidth)
     	.attr("height", actualHeight)
@@ -92,12 +104,28 @@ Barchart.prototype.create = function(){
       .attr("y", function(d) { return y(d.frequency); })
       .attr("height", function(d) { return height - y(d.frequency); });
 
+  // FIX: Not correctly rescaled: https://bugs.webkit.org/show_bug.cgi?id=71819
+
   var foreignObject = enter.append("foreignObject")
-    .attr("x", function(d) { return x(d.name); })
+    .attr("x", function(d) { return x(d.name) + 60; })
     .attr("id", function(d, i) { return 'renderWindow_' + d.name; })
     .attr("width", x.rangeBand())
-    .attr("y", function(d) { return y(d.frequency); })
+    // .attr("y", function(d) { return y(d.frequency); })
+    .attr("y", 0 )
     .attr("height", function(d) { return height - y(d.frequency); });
+
+
+  // var foreignObjectMain = enter.append("foreignObject")
+
+  //   .attr("x", function(d) { return x(d.name) + 60; })
+  //   .attr("width", x.rangeBand())
+  //   .attr("y", function(d) { return y(d.frequency); })
+  //   .attr("height", function(d) { return height - y(d.frequency); });
+
+  // var foreignObject = foreignObjectMain.append("xhtml:div")
+  //   .attr('xmlns', "http://www.w3.org/1999/xhtml")
+  //   .attr('class', 'renderDiv')
+  //   .attr("id", function(d, i) { return 'renderWindow_' + d.name; });
 
 
   // Request Render Window
@@ -112,32 +140,7 @@ Barchart.prototype.create = function(){
   console.log(foreignObject);
   console.log("foreignObject[0].length" + foreignObject[0].length);
   for (var i = 0; i < foreignObject[0].length; i++) {
-    myApp.calculateMean(elementList[foreignObject[0][i].__data__.name], foreignObject[0][i].id);
+    myApp.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id);
     
-
-
-
-
-    // myApp._serverCommunication.getMeanShapeAsync(elementList[foreignObject[0][i].__data__.name], function(meanShape){ 
-    //   // console.log("RenderWindowID: " + '#' + foreignObject[0][i].id);
-
-    //   console.log(foreignObject);
-    //   console.log(foreignObject[0][i]);
-    //   myRenderer = new Renderer('#' + foreignObject[0][i].id, JSON.parse(meanShape)); 
-    // });
   }
-  // var idList = {};
-  // var filterByDisplayedVariable = myApp._crossfilter.dimension(function (d) {return d[this._variable]});
-  // for (var i in this._displayData) {
-  //   filterByDisplayedVariable.filterAll(); // reset Filter
-  //   var currentValue = this._displayData[i].name;
-  //   idList[currentValue] = [];
-  //   filterByDisplayedVariable.filter(currentValue);
-  //   var allElementsOfValue = filterByDisplayedVariable.top(Infinity);
-  //   for (var j in allElementsOfValue)
-  //     idList[currentValue].push(allElementsOfValue[j]['zz_nr']);
-  //   // idList[this._displayData[i].name];
-  // }
-  // //myApp._serverCommunication.getMeanShapeAsync(elements, function())
-
 }
