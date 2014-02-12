@@ -35,7 +35,9 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	// internals
 
-	this.target = new THREE.Vector3();
+	// this.target = new THREE.Vector3();
+	this.target = myApp._masterRenderer._target;
+
 
 	var lastPosition = new THREE.Vector3();
 
@@ -376,8 +378,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
-		event.preventDefault();
-		event.stopPropagation();
+		// event.preventDefault();
+		// event.stopPropagation();
 
 		if ( _state === STATE.ROTATE && !_this.noRotate ) {
 

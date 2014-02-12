@@ -137,8 +137,8 @@ Barchart.prototype.create = function(){
       elementList[currentElement] = [];
     elementList[currentElement].push(myApp._data['zz_nr'].data[i]);
   }
-  console.log(foreignObject);
-  console.log("foreignObject[0].length" + foreignObject[0].length);
+  // console.log(foreignObject);
+  // console.log("foreignObject[0].length" + foreignObject[0].length);
   for (var i = 0; i < foreignObject[0].length; i++) {
     myApp.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id);
     

@@ -5,6 +5,7 @@ function App(){
 	this._groups = undefined;
 	this._visualizations = [];
 	this._serverCommunication = new ServerCommunication('http://localhost:8081');
+	this._masterRenderer = new MasterRenderer();
 	// Note: Bind Method binds this element to the method call, so 'this'
 	// will refer to the object, not the window element
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
@@ -63,9 +64,9 @@ App.prototype.removeRegisteredVisualization = function(containerId) {
 }
 
 App.prototype.calculateMean = function(elements, domId) {
-	console.log("Calculating Mean for domId " + domId);
+	// console.log("Calculating Mean for domId " + domId);
 	this._serverCommunication.getMeanShapeAsync(elements, domId, function(result) {
-		console.log("Got result for DOM ID " + result.domId);
+		// console.log("Got result for DOM ID " + result.domId);
 		// Create Renderer
 		var myRenderer = new Renderer(result.domId, result.mean); 
 	});

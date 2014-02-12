@@ -4,8 +4,6 @@ function Renderer(containerId, geometry, width, height){
 	this._geometry = this.processOlderGeometry(geometry);
 	this._width = width;
 	this._height = height;
-	console.log(this._geometry);
-	console.log("Renderer " +  this._containerId);
 	this.init();
 }
 
@@ -71,18 +69,18 @@ Renderer.prototype.init = function(){
 	// var height = $(this._containerId).width();//%$(this._containerId).height();
 	renderer.setSize(width, height);
 	debugDOM = renderer.domElement;
-	console.log(renderer.domElement);
 
 	// camera
+	var camera = myApp._masterRenderer._camera;
 	// var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 	//var camera = new THREE.OrthographicCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-	var camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 )
+	// camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 )
 	// var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
 	camera.position.z = 250;
 	debugCamera = camera;
 
-	// controls = new THREE.TrackballControls( camera, renderer.domElement );
-	var controls = new THREE.OrbitControls( camera, renderer.domElement );
+	var controls = new THREE.TrackballControls( camera, renderer.domElement );
+	// var controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	controls.rotateSpeed = 1.0;
 	controls.zoomSpeed = 1.2;
