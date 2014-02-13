@@ -10,11 +10,9 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 		// Create Renderer
 		this._geometryList[result.domId] = result.mean;
 
+		// Calculate Color Scale if wanted
 		if (result.settings != undefined){
 			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList[result.settings.calculateMean]);
-		}
-		//if (geometryList.length > 1)
-		//	myApp._masterRenderer.setDifferenceVertexColors(geometryList[0], geometryList[1]);
 		
 		var myRenderer = new Renderer(result.domId, result.mean); 
 	}.bind(this));
