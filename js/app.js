@@ -10,14 +10,13 @@ function App(){
 
 	debugMeshList = [];
 	debugScene = undefined;
-	debugGeomtryList = [];
 	// Note: Bind Method binds this element to the method call, so 'this'
 	// will refer to the object, not the window element
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
 	//this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
 	this.loadDataAsync(this.dataLoaded.bind(this));
 };
-// myApp.compareGeometries(debugGeomtryList[0], debugGeomtryList[1])
+// myApp.compareGeometries(geometryList[0], geometryList[1])
 App.prototype.compareGeometries = function(geometry1, geometry2) {
 	meanDifference = 0;
 	meanDifferenceX = 0;
@@ -93,17 +92,6 @@ App.prototype.removeRegisteredVisualization = function(containerId) {
 		for (var i = 0; i < this._visualizations.length; i++)
 			if (containerId == this._visualizations[i]['containerId'])
 				this._visualizations.splice(i, 1);
-}
-
-App.prototype.calculateMean = function(elements, domId, settings) {
-	// console.log("Calculating Mean for domId " + domId);
-	this._serverCommunication.getMeanShapeAsync(elements, domId, settings, function(result) {
-		// console.log("Got result for DOM ID " + result.domId);
-		// Create Renderer
-		debugGeomtryList.push(result.mean);
-		// myApp._masterRenderer.setDifferenceVertexColors(debugGeomtryList[0], debugGeomtryList[1]);
-		var myRenderer = new Renderer(result.domId, result.mean); 
-	});
 }
 
 // Crossfilter Library needs it's data in a specific format

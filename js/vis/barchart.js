@@ -105,7 +105,6 @@ Barchart.prototype.create = function(){
       .attr("height", function(d) { return height - y(d.frequency); });
 
   // FIX: Not correctly rescaled: https://bugs.webkit.org/show_bug.cgi?id=71819
-
   var foreignObject = enter.append("foreignObject")
     .attr("x", function(d) { return x(d.name) + 60; })
     .attr("id", function(d, i) { return 'renderWindow_' + d.name; })
@@ -139,8 +138,10 @@ Barchart.prototype.create = function(){
   }
   // console.log(foreignObject);
   // console.log("foreignObject[0].length" + foreignObject[0].length);
-  for (var i = 0; i < foreignObject[0].length; i++) {
-    myApp.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id);
-    
-  }
+  // for (var i = 0; i < foreignObject[0].length; i++) {
+  //   myApp.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id);
+  // }
+
+  myApp._masterRenderer.calculateMean(elementList[foreignObject[0][0].__data__.name], this._containerId + " #" + foreignObject[0][0].id);
+  myApp._masterRenderer.calculateMean(elementList[foreignObject[0][1].__data__.name], this._containerId + " #" + foreignObject[0][1].id, { "calculateMean":  this._containerId + " #" + foreignObject[0][0].id});
 }

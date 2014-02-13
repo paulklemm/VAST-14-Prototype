@@ -82,7 +82,7 @@ function startListening() {
 }
 
 var getMeshFileAsync = function(filename, callback) {
-	fs.readFile('./data/COR_IS/' + filename, 'utf8', function (err,data) {
+	fs.readFile('./data/COR_ES/' + filename, 'utf8', function (err,data) {
 		if (err)
 			return console.log(err);
 		else
@@ -100,7 +100,7 @@ var getSHIPDatasetAsync = function(callback) {
 }
 
 var getMeshFileNamesAsync = function(callback) {
-	fs.readdir('./data/COR_IS/', function(err, files) {
+	fs.readdir('./data/COR_ES/', function(err, files) {
 		if (err)
 			return console.log(err);
 		else
@@ -128,7 +128,7 @@ var loadAllMeshesAsync = function(callback) {
 			// preprocess files array to only include meshes needed
 			validFiles = [];
 			for (var i = 0; i < files.length; i++)
-				if (validIds.hasOwnProperty(files[i].split('_MESH_COR_IS.')[0]))
+				if (validIds.hasOwnProperty(files[i].split('_MESH_COR_ES.')[0]))
 					validFiles.push(files[i]);
 			files = validFiles;
 			
@@ -137,7 +137,7 @@ var loadAllMeshesAsync = function(callback) {
 			var loader = new THREE.STLLoader();
 			for (var i = 0; i < files.length; i++) {
 				getMeshFileAsync(files[i], function(data, filename){
-					allMeshes[filename.split('_MESH_COR_IS.')[0]] = loader.parseASCII(data);
+					allMeshes[filename.split('_MESH_COR_ES.')[0]] = loader.parseASCII(data);
 					counter = counter + 1;
 					console.log(counter + "/" + files.length + " meshes parsed");
 					if (counter == files.length)

@@ -1,16 +1,28 @@
 function MasterRenderer () {
 	this._camera = new THREE.PerspectiveCamera( 45, 1, 1, 1000 );
 	this._target = new THREE.Vector3();
+	this._geometryList = {};
 }
 
-MasterRenderer.prototype.foo = function() { 
-	console.log ("Foo")
+MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
+	// console.log("Calculating Mean for domId " + domId);
+	myApp._serverCommunication.getMeanShapeAsync(elements, domId, settings, function(result) {
+		// Create Renderer
+		this._geometryList[result.domId] = result.mean;
+
+		if (result.settings != undefined){
+			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList[result.settings.calculateMean]);
+		}
+		//if (geometryList.length > 1)
+		//	myApp._masterRenderer.setDifferenceVertexColors(geometryList[0], geometryList[1]);
+		
+		var myRenderer = new Renderer(result.domId, result.mean); 
+	}.bind(this));
 }
 
 MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometry2) {
-
 	// Create Color Scale
-	var colorScale = d3.scale.linear().domain([0,2]).range(["blue","red"]);
+	var colorScale = d3.scale.linear().domain([0,4]).range(["blue","red"]);
 	for (var i = 0; i < geometry1.faces.length; i++) { // Parse all Vertices
 		differenceA = 0;
 		differenceB = 0;
