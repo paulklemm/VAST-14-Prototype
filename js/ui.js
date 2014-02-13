@@ -45,8 +45,8 @@ ui.createSidebar = function() {
 
 	listEnter.append('div')
 		.attr('id', function(d){ return d.name})
-		// .attr('class', 'collapse')
-		.attr('class', 'collapse in')
+		.attr('class', 'collapse')
+		// .attr('class', 'collapse in')
 		.append('ul')
 			.selectAll('li')
 			.data(function(d) {return d.links})

@@ -6,3 +6,40 @@ function MasterRenderer () {
 MasterRenderer.prototype.foo = function() { 
 	console.log ("Foo")
 }
+
+MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometry2) {
+
+	// Create Color Scale
+	var colorScale = d3.scale.linear().domain([0,2]).range(["blue","red"]);
+	for (var i = 0; i < geometry1.faces.length; i++) { // Parse all Vertices
+		differenceA = 0;
+		differenceB = 0;
+		differenceC = 0;
+		// geometry1.faces[i].vertexColors[0]
+		differenceA = differenceA + Math.abs(geometry1.vertices[geometry1.faces[i].a].x - geometry2.vertices[geometry2.faces[i].a].x);
+		differenceA = differenceA + Math.abs(geometry1.vertices[geometry1.faces[i].a].y - geometry2.vertices[geometry2.faces[i].a].y);
+		differenceA = differenceA + Math.abs(geometry1.vertices[geometry1.faces[i].a].z - geometry2.vertices[geometry2.faces[i].a].z);
+		geometry1.faces[i].vertexColors[0] = new THREE.Color(colorScale(differenceA / 3));
+		geometry2.faces[i].vertexColors[0] = new THREE.Color(colorScale(differenceA / 3));
+
+		differenceB = differenceB + Math.abs(geometry1.vertices[geometry1.faces[i].b].x - geometry2.vertices[geometry2.faces[i].b].x);
+		differenceB = differenceB + Math.abs(geometry1.vertices[geometry1.faces[i].b].y - geometry2.vertices[geometry2.faces[i].b].y);
+		differenceB = differenceB + Math.abs(geometry1.vertices[geometry1.faces[i].b].z - geometry2.vertices[geometry2.faces[i].b].z);
+		geometry1.faces[i].vertexColors[1] = new THREE.Color(colorScale(differenceB / 3));
+		geometry2.faces[i].vertexColors[1] = new THREE.Color(colorScale(differenceB / 3));
+
+		differenceC = differenceC + Math.abs(geometry1.vertices[geometry1.faces[i].c].x - geometry2.vertices[geometry2.faces[i].c].x);
+		differenceC = differenceC + Math.abs(geometry1.vertices[geometry1.faces[i].c].y - geometry2.vertices[geometry2.faces[i].c].y);
+		differenceC = differenceC + Math.abs(geometry1.vertices[geometry1.faces[i].c].z - geometry2.vertices[geometry2.faces[i].c].z);
+		geometry1.faces[i].vertexColors[2] = new THREE.Color(colorScale(differenceC / 3));
+		geometry2.faces[i].vertexColors[2] = new THREE.Color(colorScale(differenceC / 3));
+	}
+
+	geometry1.colorsNeedUpdate = true;
+	geometry2.colorsNeedUpdate = true;
+
+	var result = {};
+	result.geometry1 = geometry1
+	result.geometry2 = geometry2
+	return result;
+}

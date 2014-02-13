@@ -15,6 +15,8 @@ eval(filedata)
 // Disable Debug Logging
 // io.set('log level', 1);
 
+var extension = 'ES'
+
 function startServer() {
 	loadAllMeshesAsync(startListening);
 }
@@ -72,6 +74,7 @@ function startListening() {
 			var result = {};
 			result.mean = mean;
 			result.domId = emittedData.domId;
+			result.settings = emittedData.settings;
 			console.log("Emitting getMeanShape");
 			socket.emit('getMeanShape', result);
 		});
@@ -79,7 +82,7 @@ function startListening() {
 }
 
 var getMeshFileAsync = function(filename, callback) {
-	fs.readFile('./data/stl/' + filename, 'utf8', function (err,data) {
+	fs.readFile('./data/COR_IS/' + filename, 'utf8', function (err,data) {
 		if (err)
 			return console.log(err);
 		else
@@ -97,7 +100,7 @@ var getSHIPDatasetAsync = function(callback) {
 }
 
 var getMeshFileNamesAsync = function(callback) {
-	fs.readdir('./data/stl/', function(err, files) {
+	fs.readdir('./data/COR_IS/', function(err, files) {
 		if (err)
 			return console.log(err);
 		else

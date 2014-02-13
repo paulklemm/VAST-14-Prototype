@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <link href="bower_components/jquery-ui/themes/base/jquery-ui.css" rel="stylesheet">
+<!-- <link href="js/pivottable/examples/pivot.css" rel="stylesheet"> -->
 <link href="style.css" rel="stylesheet">
 <head>
 	<meta charset='utf-8'>
@@ -26,7 +27,12 @@
 			</div>
 		</div>
 		<div class="col-md-8">
-			<div class="well" id="canvas" style="min-height:1000px"></div>
+			<div class="well" id="canvas" style="min-height:600px"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="well" id="pivotTable" style="min-height:300px"></div>
 		</div>
 	</div>
 </div> <!-- /container -->
@@ -38,10 +44,13 @@
 <script src="bower_components/crossfilter/crossfilter.js"></script>
 <script src="bower_components/threejs/build/three.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="js/pivottable/examples/pivot.js"></script>
+
 <script src="js/app.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ServerCommunication.js"></script>
 <script src="js/vis/barchart.js"></script>
+<script src="js/PivotTable.js"></script>
 <script src="js/webgl/three/TrackballControls.js"></script>
 <script src="js/webgl/three/OrbitControls.js"></script>
 <script src="js/webgl/three/STLLoader.js"></script>

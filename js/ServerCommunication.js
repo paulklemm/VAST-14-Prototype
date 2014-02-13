@@ -30,9 +30,10 @@ ServerCommunication.prototype.getGlobalMeanShapeAsync = function(callback){
 	this.helperEmitCommand('requestGlobalMeanShape', 'getGlobalMeanShape', callback);
 };
 
-ServerCommunication.prototype.getMeanShapeAsync = function(elements, domId, callback){
+ServerCommunication.prototype.getMeanShapeAsync = function(elements, domId, settings, callback){
 	var emitterData = {};
 	emitterData.elements = elements;
 	emitterData.domId = domId;
+	emitterData.settings = settings;
 	this.helperEmitCommand('requestMeanShape', 'getMeanShape', callback, emitterData);
 };

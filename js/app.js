@@ -6,16 +6,48 @@ function App(){
 	this._visualizations = [];
 	this._serverCommunication = new ServerCommunication('http://localhost:8081');
 	this._masterRenderer = new MasterRenderer();
+	this._pivotTable = undefined;
+
+	debugMeshList = [];
+	debugScene = undefined;
+	debugGeomtryList = [];
 	// Note: Bind Method binds this element to the method call, so 'this'
 	// will refer to the object, not the window element
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
 	//this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
 	this.loadDataAsync(this.dataLoaded.bind(this));
 };
+// myApp.compareGeometries(debugGeomtryList[0], debugGeomtryList[1])
+App.prototype.compareGeometries = function(geometry1, geometry2) {
+	meanDifference = 0;
+	meanDifferenceX = 0;
+	meanDifferenceY = 0;
+	meanDifferenceZ = 0;
+	for (var i = 0; i < geometry1.vertices.length; i++) { // Parse all Vertices
+		meanDifference = meanDifference + Math.abs(geometry1.vertices[i].x - geometry2.vertices[i].x);
+		meanDifference = meanDifference + Math.abs(geometry1.vertices[i].y - geometry2.vertices[i].y);
+		meanDifference = meanDifference + Math.abs(geometry1.vertices[i].z - geometry2.vertices[i].z);
+		
+		meanDifferenceX = meanDifferenceX + Math.abs(geometry1.vertices[i].x - geometry2.vertices[i].x);
+		meanDifferenceY = meanDifferenceY + Math.abs(geometry1.vertices[i].y - geometry2.vertices[i].y);
+		meanDifferenceZ = meanDifferenceZ + Math.abs(geometry1.vertices[i].z - geometry2.vertices[i].z);
+	}
+
+	meanDifference = meanDifference / (geometry1.vertices.length * 3);
+	meanDifferenceX = meanDifferenceX / (geometry1.vertices.length);
+	meanDifferenceY = meanDifferenceY / (geometry1.vertices.length);
+	meanDifferenceZ = meanDifferenceZ / (geometry1.vertices.length);
+
+	console.log("MeanDifference: " + meanDifference);
+	console.log("MeanDifferenceX: " + meanDifferenceX);
+	console.log("MeanDifferenceY: " + meanDifferenceY);
+	console.log("MeanDifferenceZ: " + meanDifferenceZ);
+}
 
 App.prototype.dataLoaded = function(){
 	this.constructCrossfilterDataset();
 	this.loadGroupDataAsync(ui.createSidebar);
+	this._pivotTable = new PivotTable('#pivotTable', this._data);
 }
 
 App.prototype.loadGroupDataAsync = function(callback) {
@@ -63,11 +95,13 @@ App.prototype.removeRegisteredVisualization = function(containerId) {
 				this._visualizations.splice(i, 1);
 }
 
-App.prototype.calculateMean = function(elements, domId) {
+App.prototype.calculateMean = function(elements, domId, settings) {
 	// console.log("Calculating Mean for domId " + domId);
-	this._serverCommunication.getMeanShapeAsync(elements, domId, function(result) {
+	this._serverCommunication.getMeanShapeAsync(elements, domId, settings, function(result) {
 		// console.log("Got result for DOM ID " + result.domId);
 		// Create Renderer
+		debugGeomtryList.push(result.mean);
+		// myApp._masterRenderer.setDifferenceVertexColors(debugGeomtryList[0], debugGeomtryList[1]);
 		var myRenderer = new Renderer(result.domId, result.mean); 
 	});
 }

@@ -47,6 +47,7 @@ Renderer.prototype.init = function(){
 
 	function render() {
 
+		mesh.geometry.colorsNeedUpdate = true;
 		renderer.render( scene, camera );
 		//stats.update();
 
@@ -79,7 +80,7 @@ Renderer.prototype.init = function(){
 	camera.position.z = 250;
 	debugCamera = camera;
 
-	var controls = new THREE.TrackballControls( camera, renderer.domElement );
+	var controls = new THREE.TrackballControls( camera, renderer.domElement, myApp._masterRenderer._target );
 	// var controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 	controls.rotateSpeed = 1.0;
@@ -97,29 +98,68 @@ Renderer.prototype.init = function(){
 	controls.addEventListener( 'change', render );
 
 	var scene = new THREE.Scene();
+	console.log("Scene: " + scene.id + " belongs to " + this._containerId);
+	if (debugScene == undefined)
+		debugScene = scene;
 
 	// add subtle blue ambient lighting
-	var ambientLight = new THREE.AmbientLight(0x000044);
+	var ambientLight = new THREE.AmbientLight(0xffffff);
 	scene.add(ambientLight);
 	// directional lighting
-	var directionalLight = new THREE.DirectionalLight(0xffffff);
-	directionalLight.position.set(1, 1, 1).normalize();
-	scene.add(directionalLight);
+	// var directionalLight = new THREE.DirectionalLight(0xffffff);
+	// directionalLight.position.set(1, 1, 1).normalize();
+	// scene.add(directionalLight);
 
 	var loader = new THREE.STLLoader();
-	var material = new THREE.MeshPhongMaterial( { ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200 } );
+	// var material = new THREE.MeshPhongMaterial( { ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200 } );
+	var material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+	// var materials = [
+	// 	new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } ),
+	// 	new THREE.MeshBasicMaterial( { color: 0x000000, shading: THREE.FlatShading, wireframe: true, transparent: true } )
+	// ];
 	// console.log(geometry);
 	var mesh = new THREE.Mesh(this._geometry, material);
-	debugMesh = mesh;
 	mesh.rotation.set( 90, 0, - Math.PI / 2);
-	// mesh.scale.set( 3, 3, 1 );
-	mesh.scale.set( 1, 1, 1 );
-
-	// mesh.castShadow = true;
-	// mesh.receiveShadow = true;
-
+	debugMeshList.push(mesh);
 	scene.add( mesh );
-	//animate();
+	// // mesh.scale.set( 3, 3, 1 );
+	// mesh.scale.set( 1, 1, 1 );
+
+	drawGrid = false;
+	if (drawGrid)
+	{
+		// Grid
+
+		var _geometry = new THREE.Geometry();
+		_geometry.vertices.push( new THREE.Vertex( new THREE.Vector3( - 500, 0, 0 ) ) );
+		_geometry.vertices.push( new THREE.Vertex( new THREE.Vector3( 500, 0, 0 ) ) );
+		for ( var i = 0; i <= 50; i ++ ) {
+
+			var line = new THREE.Line( _geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
+			line.position.z = ( i * 10 ) - 100;
+			// line.position.y = ( j * 20);
+			// scene.add( line );
+
+			var line = new THREE.Line( _geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
+			line.position.x = ( i * 10 ) - 100;
+			line.rotation.y = 90 * Math.PI / 180;
+			scene.add( line );
+
+		}
+		for ( var i = 0; i <= 50; i ++ ) {
+
+			var line = new THREE.Line( _geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
+			line.position.y = ( i * 10 ) - 100;
+			// line.position.y = ( j * 20);
+			// scene.add( line );
+
+			var line = new THREE.Line( _geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
+			line.position.y = ( i * 10 ) - 100;
+			line.rotation.x = 90 * Math.PI / 180;
+			scene.add( line );
+
+		}
+	}
 	animate();
 	$(this._containerId).append(renderer.domElement);
 }

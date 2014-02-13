@@ -2,7 +2,9 @@
  * @author Eberhard Graether / http://egraether.com/
  */
 
-THREE.TrackballControls = function ( object, domElement ) {
+// Made a few Changes to propagate Paning over all instances - a global target
+// Vector is needed in order for it to work propery
+THREE.TrackballControls = function ( object, domElement, targetVector ) {
 
 	var _this = this;
 	var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM: 4, TOUCH_PAN: 5 };
@@ -36,7 +38,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 	// internals
 
 	// this.target = new THREE.Vector3();
-	this.target = myApp._masterRenderer._target;
+	this.target = targetVector;
 
 
 	var lastPosition = new THREE.Vector3();
