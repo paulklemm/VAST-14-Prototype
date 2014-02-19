@@ -7,6 +7,7 @@ function App(){
 	this._serverCommunication = new ServerCommunication('http://localhost:8081');
 	this._masterRenderer = new MasterRenderer();
 	this._pivotTable = undefined;
+	this._statistics = new Statistics();
 
 	debugMeshList = [];
 	debugScene = undefined;
@@ -43,10 +44,25 @@ App.prototype.compareGeometries = function(geometry1, geometry2) {
 	console.log("MeanDifferenceZ: " + meanDifferenceZ);
 }
 
+App.prototype.removeFaultyData = function(_data) {
+	for (key in _data) {
+		var currentElement = _data[key];
+		currentElement.invalidIndices = new Array();
+		for (var j = 0; j < currentElement.data.length; j++) {
+			var currentValue = currentElement.data[j];
+			if (currentValue == '9 - noData' || parseFloat(currentValue) > 900 || currentValue.toString() == 'NaN') {
+				currentElement.invalidIndices[j] = true;
+			}
+		}
+	}
+	return _data;
+}
+
 App.prototype.dataLoaded = function(){
 	this.constructCrossfilterDataset();
 	this.loadGroupDataAsync(ui.createSidebar);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
+	this._statistics.removeFaultyData(this._data);
 }
 
 App.prototype.loadGroupDataAsync = function(callback) {

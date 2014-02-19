@@ -48,11 +48,12 @@ svg {
 
 /* Bar Chart */
 .bar {
-	fill: steelblue;
+	/*fill: steelblue;*/
+	fill: #E0E0E0;
 }
 
 .bar:hover {
-	fill: brown;
+	/*fill: brown;*/
 }
 
 .axis {

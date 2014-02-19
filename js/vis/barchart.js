@@ -138,10 +138,14 @@ Barchart.prototype.create = function(){
   }
   // console.log(foreignObject);
   // console.log("foreignObject[0].length" + foreignObject[0].length);
-  // for (var i = 0; i < foreignObject[0].length; i++) {
-  //   myApp.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id);
-  // }
-
-  myApp._masterRenderer.calculateMean(elementList[foreignObject[0][0].__data__.name], this._containerId + " #" + foreignObject[0][0].id);
-  myApp._masterRenderer.calculateMean(elementList[foreignObject[0][1].__data__.name], this._containerId + " #" + foreignObject[0][1].id, { "calculateMean":  this._containerId + " #" + foreignObject[0][0].id});
+  
+  if (foreignObject[0].length > 2)
+    for (var i = 0; i < foreignObject[0].length; i++) {
+      myApp._masterRenderer.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id);
+    }
+  else { // Calculate Mean Shapes
+    myApp._masterRenderer.calculateMean(elementList[foreignObject[0][0].__data__.name], this._containerId + " #" + foreignObject[0][0].id);
+    myApp._masterRenderer.calculateMean(elementList[foreignObject[0][1].__data__.name], this._containerId + " #" + foreignObject[0][1].id, { "calculateMean":  this._containerId + " #" + foreignObject[0][0].id});
+  }
+  
 }

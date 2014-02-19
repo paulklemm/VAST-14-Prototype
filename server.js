@@ -13,15 +13,22 @@ filedata = fs.readFileSync('./node_modules/three/examples/js/loaders/STLLoader.j
 eval(filedata)
 
 // Disable Debug Logging
-// io.set('log level', 1);
+io.set('log level', 1);
 
-var extension = 'ES'
+var extension = 'ES';
+var clustering = undefined;
 
 function startServer() {
+	// Create Clustering Object with mesh name indices list
+	getMeshNameIndices(function(meshNameIndices) {
+		var Clustering = require('./js/server/Clustering');
+		clustering = new Clustering(meshNameIndices);
+	});
 	loadAllMeshesAsync(startListening);
 }
 
 function startListening() {
+	getMeshNameIndices();
 	// Configure the server to use static content
 	app.configure(function () {
 		app.use(
@@ -54,6 +61,13 @@ function startListening() {
 		socket.on('debug', function(){
 			//console.log(allMeshes);
 			console.log(Object.keys(allMeshes).length);
+		});
+
+		socket.on('requestClustering', function(ids) {
+			// Clustering
+			clustering.cluster(ids, function(output) {
+				socket.emit('getClustering', output);
+			});
 		});
 
 		socket.on('dumpMeshArray', function() {
@@ -115,6 +129,22 @@ var getMeshFileNamesAsync = function(callback) {
 	});
 }
 
+var getMeshNameIndices = function(callback) {
+	getMeshFileNamesAsync(function(files) {
+		var meshNameIndices = {};
+		meshNameIndices.shipToMatlab = {};
+		meshNameIndices.matlabToShip = {};
+		for (var i = 0; i < files.length; i++){
+			var shipId = files[i].split('_MESH_COR_ES.')[0];
+			// Tracks which Name has which ID (for Clustering)
+			meshNameIndices.shipToMatlab[shipId] = i + 1;
+			meshNameIndices.matlabToShip[i + 1] = shipId;
+		}
+		// Run Callback
+		if (callback != undefined)
+			callback(meshNameIndices);
+	});
+}
 // Mesh Processing
 var loadAllMeshesAsync = function(callback) {
 	// Get SHIP Dataset to know which subjects need to be loaded

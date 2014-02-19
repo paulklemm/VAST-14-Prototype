@@ -5,7 +5,10 @@ function MasterRenderer () {
 }
 
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
-	// console.log("Calculating Mean for domId " + domId);
+	myApp._serverCommunication.getClusteringAsync(elements, function(result) {
+		console.log(result);
+	});
+	console.log("Calculating Mean for domId " + domId);
 	myApp._serverCommunication.getMeanShapeAsync(elements, domId, settings, function(result) {
 		// Create Renderer
 		this._geometryList[result.domId] = result.mean;
