@@ -10,7 +10,7 @@ function Statistics() {
 // 	}
 // }
 
-Statistics.prototype.getCraimerRankingList = function(data) {
+Statistics.prototype.getCramerRankingList = function(data) {
 	var variables = Object.keys(data);
 	console.log(variables);
 	var result = [];
@@ -19,13 +19,12 @@ Statistics.prototype.getCraimerRankingList = function(data) {
 		for (var j = 0; j < variables.length; j++){
 			if (i != j && j > i)
 			{
-				var craimersV = this.getCraimersV(data[variables[i]], data[variables[j]]);
+				var craimersV = this.getCramersV(data[variables[i]], data[variables[j]]);
 				if (!isNaN(craimersV)){
 					result.push({'x': variables[i], 'y': variables[j], 'craimersV': craimersV});
-					if (craimersV > 0.5)
+					if (craimersV > 0.3)
 						console.log({'x': variables[i], 'y': variables[j], 'craimersV': craimersV});
 				}
-
 			}
 		}
 	}
@@ -172,7 +171,7 @@ Statistics.prototype.calculateChiSquare = function(x, y, debug, yatesCorrection,
 	}
 }
 
-Statistics.prototype.getCraimersV = function(x, y) {
+Statistics.prototype.getCramersV = function(x, y) {
 	var variableXValid = new Array();
 	var variableYValid = new Array();
 
@@ -197,7 +196,7 @@ Statistics.prototype.getCraimersV = function(x, y) {
 	else
 		minLength = lengthY;
 
-	return Math.sqrt(chiSquareCoefficient / n * (minLength - 1));
+	return Math.sqrt(chiSquareCoefficient / (n * (minLength - 1)));
 }
 
 // http://www.codeproject.com/Articles/432194/How-to-Calculate-the-Chi-Squared-P-Value

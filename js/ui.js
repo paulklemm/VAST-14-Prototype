@@ -6,54 +6,61 @@ ui.resizing = {};
 // https://stackoverflow.com/questions/15391325/how-to-collapse-expand-list-using-bootstrap-jquery
 ui.createSidebar = function() {
 
-	groupArray = myApp._groups;
+	var createOldList = false;
+	if (!createOldList) {
+		var listView = new ListView("#list-group-svg", myApp._groups);
+		groupArray = myApp._groups;
+	}
+	else {
 
-	// Create something which looks like this:
-	// <li class="list-group-item"><a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#demo">Group 1</a>
-	// 	<div id="demo" class="collapse in">
-	// 		<ul class="list-group">
-	// 			<!-- <li class="nav-header">List header</li> -->
-	// 			<li class="list-group-item"><a href="#">Home</a></li>
-	// 			<li class="list-group-item"><a href="#">Library</a></li>
-	// 		</ul>
-	// 	</div>
-	// </li>
-	// <li class="list-group-item"><a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#demo2">Group 2</a>
-	// 	<div id="demo2" class="collapse in">
-	// 		<ul class="list-group">
-	// 			<!-- <li class="nav-header">List header</li> -->
-	// 			<li class="list-group-item"><a href="#">Home</a></li>
-	// 			<li class="list-group-item"><a href="#">Library</a></li>
-	// 		</ul>
-	// 	</div>
-	// </li>
+		// Create something which looks like this:
+		// <li class="list-group-item"><a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#demo">Group 1</a>
+		// 	<div id="demo" class="collapse in">
+		// 		<ul class="list-group">
+		// 			<!-- <li class="nav-header">List header</li> -->
+		// 			<li class="list-group-item"><a href="#">Home</a></li>
+		// 			<li class="list-group-item"><a href="#">Library</a></li>
+		// 		</ul>
+		// 	</div>
+		// </li>
+		// <li class="list-group-item"><a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#demo2">Group 2</a>
+		// 	<div id="demo2" class="collapse in">
+		// 		<ul class="list-group">
+		// 			<!-- <li class="nav-header">List header</li> -->
+		// 			<li class="list-group-item"><a href="#">Home</a></li>
+		// 			<li class="list-group-item"><a href="#">Library</a></li>
+		// 		</ul>
+		// 	</div>
+		// </li>
 
-	var toplist = d3.select(".well ul");
+		var toplist = d3.select(".well ul");
 
-	var listEnter = toplist.selectAll("li")
-			.data(groupArray)
-		.enter().append('li')
-			.attr('class', 'list-group-item');
-
-	listEnter.append('a')
-		.attr('id', 'toggler')
-		.attr('href', '#')
-		.attr('data-toggle', "collapse")
-		//.attr('class', "active")
-		.attr('data-target', function(d) { return '#' + d.name})
-		.text(function(d){ return d.name });
-
-	listEnter.append('div')
-		.attr('id', function(d){ return d.name})
-		.attr('class', 'collapse')
-		// .attr('class', 'collapse in')
-		.append('ul')
-			.selectAll('li')
-			.data(function(d) {return d.links})
+		var listEnter = toplist.selectAll("li")
+				.data(groupArray)
 			.enter().append('li')
-				.attr('class', 'list-group-item attribute')
-				.attr('draggable', 'true')
-				.text(function(d) { return myApp._data[d].description.detail; })
+				.attr('class', 'list-group-item');
+
+		listEnter.append('a')
+			.attr('id', 'toggler')
+			.attr('href', '#')
+			.attr('data-toggle', "collapse")
+			//.attr('class', "active")
+			.attr('data-target', function(d) { return '#' + d.name})
+			.text(function(d){ return d.name });
+
+		listEnter.append('div')
+			.attr('id', function(d){ return d.name})
+			.attr('class', 'collapse')
+			.append('div').attr("class", "panel-body")
+			// .attr('class', 'collapse in')
+			.append('ul')
+				.selectAll('li')
+				.data(function(d) {return d.children})
+				.enter().append('li')
+					.attr('class', 'list-group-item attribute')
+					.attr('draggable', 'true')
+					.text(function(d) { return myApp._data[d].description.detail; })
+	}
 
 	// Add Drag and Drop functionality to the Elements
 	ui.dragging.attachDragLogic();
@@ -181,7 +188,8 @@ ui.dragging.handleDragEnd = function(e) {
 
 ui.dragging.attachDragLogic = function(){
 
-	var attributes = document.querySelectorAll('li.attribute');
+	// var attributes = document.querySelectorAll('li.attribute');
+	var attributes = document.querySelectorAll('.attribute');
 	var canvas = document.querySelector('.well#canvas');
 	canvas.addEventListener('dragenter', ui.dragging.handleDragEnter, false);
 	canvas.addEventListener('dragover', ui.dragging.handleDragOver, false);

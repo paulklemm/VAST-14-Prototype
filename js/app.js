@@ -74,7 +74,7 @@ App.prototype.loadGroupDataAsync = function(callback) {
 		for (var key in groups){
 			var dataElement = {};
 			dataElement.name = key;
-			dataElement.links = groups[key];
+			dataElement.children = groups[key];
 			groupArray.push(dataElement);
 		}
 		app._groups = groupArray; // set group data
