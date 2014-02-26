@@ -1,6 +1,7 @@
 .DS_Store
 *.DS_Store
 *.csv
+*.sublime-workspace
 data/
 bower_components/
 node_modules/

@@ -2,8 +2,10 @@ function ListView(containterId, groups) {
 	this._containerId = containterId;
 	this._containerSelector = d3.select(containterId);
 	this._groups = groups;
+	// attach selected Tag!
 	for (var i = 0; i < this._groups.length; i++)
 		this._groups[i].selected = false;
+
 	this.updateList();
 }
 var tweetsBox;

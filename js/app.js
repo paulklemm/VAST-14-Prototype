@@ -44,25 +44,31 @@ App.prototype.compareGeometries = function(geometry1, geometry2) {
 	console.log("MeanDifferenceZ: " + meanDifferenceZ);
 }
 
-App.prototype.removeFaultyData = function(_data) {
-	for (key in _data) {
-		var currentElement = _data[key];
-		currentElement.invalidIndices = new Array();
-		for (var j = 0; j < currentElement.data.length; j++) {
-			var currentValue = currentElement.data[j];
-			if (currentValue == '9 - noData' || parseFloat(currentValue) > 900 || currentValue.toString() == 'NaN') {
-				currentElement.invalidIndices[j] = true;
-			}
-		}
-	}
-	return _data;
-}
+// App.prototype.removeFaultyData = function(_data) {
+// 	for (key in _data) {
+// 		// Do this only if data is not metric!
+// 		if (_data[key].description.dataType != 'metric') {
+// 			var currentElement = _data[key];
+// 			currentElement.invalidIndices = new Array();
+// 			for (var j = 0; j < currentElement.data.length; j++) {
+// 				var currentValue = currentElement.data[j];
+// 				if (currentValue == '9 - noData' || parseFloat(currentValue) > 900 || currentValue.toString() == 'NaN') {
+// 					currentElement.invalidIndices[j] = true;
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return _data;
+// }
 
 App.prototype.dataLoaded = function(){
 	this.constructCrossfilterDataset();
 	this.loadGroupDataAsync(ui.createSidebar);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
 	this._statistics.removeFaultyData(this._data);
+	console.log("Calculating bins ...");
+	this._statistics.createBinsForAllMetricVariables(this._data);
+	console.log("Calculating bins done");
 }
 
 App.prototype.loadGroupDataAsync = function(callback) {
