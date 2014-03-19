@@ -63,10 +63,14 @@ function startListening() {
 			console.log(Object.keys(allMeshes).length);
 		});
 
-		socket.on('requestClustering', function(ids) {
+		socket.on('requestClustering', function(emittedData, name) {
 			// Clustering
-			clustering.cluster(ids, function(output) {
-				socket.emit('getClustering', output);
+			//console.log(emittedData);
+			clustering.cluster(emittedData, function(output, data) {
+				var result = {};
+				result.clusters = output;
+				result.emittedData = data;
+				socket.emit('getClustering', result);
 			});
 		});
 

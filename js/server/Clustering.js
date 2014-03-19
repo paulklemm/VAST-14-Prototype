@@ -29,9 +29,10 @@ Clustering.prototype.createClusterSpawnParameter = function(ids, minimumClusterN
 	return {'command': commandString, 'validClusterSubjectsList': validClusterSubjectsList};
 }
 
-Clustering.prototype.cluster = function(ids, callback) {
+Clustering.prototype.cluster = function(data, callback) {
+	var ids = data.elements;
 	var spawnParameter = this.createClusterSpawnParameter(ids);
-	this.spawnClustering(spawnParameter.command, spawnParameter.validClusterSubjectsList, callback);
+	this.spawnClustering(spawnParameter.command, spawnParameter.validClusterSubjectsList, data, callback);
 }
 
 Clustering.prototype.helperProcessMatlabStdout = function(stdout, subjectIds) {
@@ -57,7 +58,7 @@ Clustering.prototype.helperProcessMatlabStdout = function(stdout, subjectIds) {
 
 // Run Shell Script for calculating the Cluster
 // https://stackoverflow.com/questions/7464036/node-js-shell-script-and-arguments
-Clustering.prototype.spawnClustering = function(command, subjectIds, callback) {
+Clustering.prototype.spawnClustering = function(command, subjectIds, data, callback) {
 // Clustering.prototype.spawnClustering = function(command){
 	var util = require('util')
 	var exec = require('child_process').exec;
@@ -67,7 +68,7 @@ Clustering.prototype.spawnClustering = function(command, subjectIds, callback) {
 		if (error !== null)
 			console.log('exec error: ' + error);
 		else
-			callback(this.helperProcessMatlabStdout(stdout, subjectIds));
+			callback(this.helperProcessMatlabStdout(stdout, subjectIds), data);
 	// 	console.log('stdout: ' + stdout);
 	// 	console.log('stderr: ' + stderr);
 	// 	if (error !== null) {

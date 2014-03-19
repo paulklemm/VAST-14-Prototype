@@ -5,7 +5,7 @@ Statistics.prototype.createBinsForAllMetricVariables = function(data) {
 	var keys = Object.keys(data);
 	for (var i = 0; i < keys.length; i++)
 		if (data[keys[i]].description.dataType == 'metric')
-			this.createBins(data[keys[i]], 5);
+			this.createBins(data[keys[i]], 3);
 }
 
 Statistics.prototype.createBins = function(variable, numberOfBins, debug) {
@@ -62,8 +62,40 @@ Statistics.prototype.createBins = function(variable, numberOfBins, debug) {
 	}
 }
 
+// Statistics.prototype.compareCramersVList = function(listX, listY) {
+// 	var result = [];
+// 	for (var i = 0; i < listX.length; i++) {
+// 		var currentX = listX[i];
+// 		var Other = otherOddsRatioTableMatrix._matrix[i];
+		
+// 		var difference = myApp._statistics.getOddsRatioTableDifference(currentX.oddsTable, Other.oddsTable)
+// 		if (difference == -1)
+// 		// if (difference == 0)
+// 		else
+// 			result.push({'x': currentX.x, 'y': currentX.y, 'difference': difference});
+// 	}
+// 	var sorted = result.sort(function(a, b) {return d3.descending(a.difference.difference, b.difference.difference);});
+// 	return sorted;
+// }
 
-Statistics.prototype.getCramerRankingList = function(data) {
+Statistics.prototype.getCramerVMatrix = function(data, subjects) {
+	var variables = Object.keys(data);
+	var matrix = {};
+	var result = [];
+	for (var i = 0; i < variables.length; i++) {
+		matrix[variables[i]] = {}; // Create new Matrix Entry
+		for (var j = 0; j < variables.length; j++) {
+			if (i != j && j > i) {
+				var craimersV = this.getCramersVIncremental(data[variables[i]], data[variables[j]], 5, subjects);
+				matrix[variables[i]][variables[j]] = craimersV;
+			}
+		}
+	}
+	// return result;
+	return matrix;
+}
+
+Statistics.prototype.getCramerRankingList = function(data, subjects) {
 	var variables = Object.keys(data);
 	console.log(variables);
 	var result = [];
@@ -72,7 +104,7 @@ Statistics.prototype.getCramerRankingList = function(data) {
 		for (var j = 0; j < variables.length; j++){
 			if (i != j && j > i)
 			{
-				var craimersV = this.getCramersV(data[variables[i]], data[variables[j]]);
+				var craimersV = this.getCramersV(data[variables[i]], data[variables[j]], subjects);
 				if (!isNaN(craimersV)){
 					result.push({'x': variables[i], 'y': variables[j], 'craimersV': craimersV});
 					if (craimersV > 0.3)
@@ -112,8 +144,8 @@ Statistics.prototype.removeFaultyData = function(_data) {
 Statistics.prototype.getDimensionsList = function(x) {
 	var dimensionsListX = new Array();
 	for (var i = 0; i < x.length; i++)
-			if (dimensionsListX.indexOf(x[i]) === -1)
-				dimensionsListX.push(x[i]);
+		if (dimensionsListX.indexOf(x[i]) === -1)
+			dimensionsListX.push(x[i]);
 	return dimensionsListX;
 }
 
@@ -514,7 +546,8 @@ Statistics.prototype.getValidMatchingData = function(x, y, subjects) {
 	if (subjects != undefined)
 		for (var i = 0; i < subjects.length; i++) {
 			var currentSubject = subjects[i];
-			var currentSubjectPosition = myApp._data.zz_nr.data.indexOf(currentSubject + '');
+			// var currentSubjectPosition = myApp._data.zz_nr.data.indexOf(currentSubject + '');
+			var currentSubjectPosition = myApp._zz_nrHash[currentSubject];
 			validSubjects[currentSubjectPosition] = true;
 		}
 	for (var k = 0; k < x.data.length; k++) {
@@ -538,14 +571,14 @@ Statistics.prototype.getValidMatchingData = function(x, y, subjects) {
 	return {"variableXValid": variableXValid, "variableYValid": variableYValid}
 }
 
-Statistics.prototype.getCramersV = function(x, y, debug) {
+Statistics.prototype.getCramersV = function(x, y, subjects, debug) {
 	
-	var matchingValidData = this.getValidMatchingData(x, y);
+	var matchingValidData = this.getValidMatchingData(x, y, subjects);
 	var variableXValid = matchingValidData.variableXValid;
 	var variableYValid = matchingValidData.variableYValid;
 
 	//https://de.wikipedia.org/wiki/Kontingenzkoeffizient
-	var chiSquareCoefficient = this.calculateChiSquare(variableXValid, variableYValid, false, false);
+	var chiSquareCoefficient = this.calculateChiSquare(variableXValid, variableYValid, debug, false);
 	// n: Gesamtzahl der Fälle (Stichprobenumfang)
 	var n = variableXValid.length;
 	// min[r,c] ist der kleinere der beiden Werte "Zahl der Zeilen (rows)" und "Zahl der Spalten (columns)"
@@ -568,6 +601,100 @@ Statistics.prototype.getCramersV = function(x, y, debug) {
 	}
 
 	return Math.sqrt(chiSquareCoefficient / (n * (minLength - 1)));
+}
+
+Statistics.prototype.getCramersVIncremental = function(x, y, maximumNumberOfRemovedManifestations, subjects, debug) {
+	
+	var matchingValidData = this.getValidMatchingData(x, y, subjects);
+	var variableXValid = matchingValidData.variableXValid;
+	var variableYValid = matchingValidData.variableYValid;
+	var gotValidValue = false;
+	var numberOfManifestationsTrashed = -1;
+	var cramersV = undefined;
+	var contingencyTable = undefined;
+	var manifestationCountList = undefined;
+
+	// Stay in this loop as long as valid value can be calculated
+	while (!gotValidValue) {
+
+		numberOfManifestationsTrashed = numberOfManifestationsTrashed + 1;
+		// stop if the counter is beyond the limit of maximum removed manifestations
+		if (maximumNumberOfRemovedManifestations != undefined && numberOfManifestationsTrashed > maximumNumberOfRemovedManifestations)
+			return NaN;
+		// do nothing of this for the first run through since nothing needs to be removed
+		if (numberOfManifestationsTrashed > 0 && contingencyTable == undefined) { //Calculate contingency Table
+			// Get List Sorted list of Variables and their counts
+			// [ valueName: "2", count: 475, dimension: "x"} valueName: "1", count: 300, dimension: "y"} ... ]
+			contingencyTable = this.getContingencyTable(variableXValid, variableYValid);
+			var _manifestationCountList = [];
+			for (var i = 0; i < contingencyTable.dimensionsListX.length; i++)
+				_manifestationCountList.push({'valueName': contingencyTable.dimensionsListX[i], 'count': contingencyTable.rowTotals[i], 'dimension': 'x'});
+			for (var i = 0; i < contingencyTable.dimensionsListY.length; i++)
+				_manifestationCountList.push({'valueName': contingencyTable.dimensionsListY[i], 'count': contingencyTable.columnTotals[i], 'dimension': 'y'});
+
+			manifestationCountList = _manifestationCountList.sort(function(a, b) {return d3.ascending(a.count, b.count);});
+		}
+
+		// do nothing of this for the first run through since nothing needs to be removed
+		if (numberOfManifestationsTrashed > 0){
+			// Create new Empty Valid Variable Arrays
+			var newVariableXValid = [];
+			var newVariableYValid = [];
+			// Get manifestation with lowest count
+			lowestManifestionCount = manifestationCountList[numberOfManifestationsTrashed - 1];
+			if (lowestManifestionCount == undefined) // this happens when there are no values left to compare!
+				return NaN;
+			// Remove Elements of the lowest manifestation
+			if (lowestManifestionCount.dimension == 'x')
+				for (var i = 0; i < variableXValid.length; i++)
+					if (variableXValid[i] != lowestManifestionCount.valueName) {
+						newVariableXValid.push(variableXValid[i]);
+						newVariableYValid.push(variableYValid[i]);
+					}
+			if (lowestManifestionCount.dimension == 'y')
+				for (var i = 0; i < variableYValid.length; i++)
+					if (variableYValid[i] != lowestManifestionCount.valueName) {
+						newVariableXValid.push(variableXValid[i]);
+						newVariableYValid.push(variableYValid[i]);
+					}
+			// now we have our cleaned Variables and can proceed as usual
+			variableXValid = newVariableXValid;
+			variableYValid = newVariableYValid;
+		}
+		//https://de.wikipedia.org/wiki/Kontingenzkoeffizient
+		var chiSquareCoefficient = this.calculateChiSquare(variableXValid, variableYValid, debug, false);
+		// n: Gesamtzahl der Fälle (Stichprobenumfang)
+		var n = variableXValid.length;
+		// min[r,c] ist der kleinere der beiden Werte "Zahl der Zeilen (rows)" und "Zahl der Spalten (columns)"
+		var lengthX = this.getDimensionsList(variableXValid).length;
+		var lengthY = this.getDimensionsList(variableYValid).length;
+		var minLength = 0;
+		if (lengthX < lengthY)
+			minLength = lengthX;
+		else
+			minLength = lengthY;
+
+		if (debug) {
+			console.log("numberOfManifestationsTrashed: " + numberOfManifestationsTrashed);
+			console.log("lowestManifestionCount");
+			console.log(lowestManifestionCount);
+			console.log("x: " + x.name);
+			console.log("y: " + y.name);
+			console.log(variableXValid);
+			console.log(variableYValid);
+			console.log("chiSquareCoefficient: " + chiSquareCoefficient);
+			console.log("variableXValid.length: " + variableXValid.length);
+			console.log("variableYValid.length: " + variableYValid.length);
+		}
+
+		cramersV = Math.sqrt(chiSquareCoefficient / (n * (minLength - 1)));
+		if (cramersV != undefined && !isNaN(cramersV))
+			gotValidValue = true;
+
+		// if (numberOfManifestationsTrashed - 1 >= manifestationCountList.length) // Also do nothing the numbers of manifestations are reached
+		// 	gotValidValue = true;
+	}
+	return cramersV;
 }
 
 // http://www.codeproject.com/Articles/432194/How-to-Calculate-the-Chi-Squared-P-Value

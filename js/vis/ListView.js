@@ -8,7 +8,6 @@ function ListView(containterId, groups) {
 
 	this.updateList();
 }
-var tweetsBox;
 
 // inspired by http://jsfiddle.net/rWByD/1/
 ListView.prototype.updateList = function () {
@@ -36,18 +35,21 @@ ListView.prototype.updateList = function () {
 					.attr('draggable', 'true')
 					.text(function(d) { return myApp._data[d].description.detail; })
 
-	// This code does nothing actually 
+	// This code does nothing actually - only when an update is called!
 	head.transition()
-	  .delay(200)
+	  .delay(1000)
 	  .style("opacity", 1);
 	head.exit()
 	    .transition()
-	    .duration(200)
+	    .duration(1000)
 	    .style("opacity", 0)
 	    .remove();
 
 	function toggleMenu() {
-		console.log(this.__data__);
+		// HACK: This is done because the 
+		myApp._listView.updateList();
+		ui.dragging.attachDragLogic();
+		// console.log(this.__data__);
 		if (!this.__data__.selected)
 			d3.select(this).selectAll('p').attr('style', 'display:block');
 		else

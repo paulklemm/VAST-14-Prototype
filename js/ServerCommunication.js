@@ -30,8 +30,11 @@ ServerCommunication.prototype.getGlobalMeanShapeAsync = function(callback){
 	this.helperEmitCommand('requestGlobalMeanShape', 'getGlobalMeanShape', callback);
 };
 
-ServerCommunication.prototype.getClusteringAsync = function(elements, callback) {
-	this.helperEmitCommand('requestClustering', 'getClustering', callback, elements);
+ServerCommunication.prototype.getClusteringAsync = function(elements, variables, callback) {
+	var emitterData = {};
+	emitterData.elements = elements;
+	emitterData.variables = variables;
+	this.helperEmitCommand('requestClustering', 'getClustering', callback, emitterData);
 } 
 
 ServerCommunication.prototype.getMeanShapeAsync = function(elements, domId, settings, callback){

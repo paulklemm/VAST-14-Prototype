@@ -9,6 +9,7 @@ ui.createSidebar = function() {
 	var createOldList = false;
 	if (!createOldList) {
 		var listView = new ListView("#list-group-svg", myApp._groups);
+		myApp._listView = listView;
 		groupArray = myApp._groups;
 	}
 	else {

@@ -7,11 +7,12 @@ function MasterRenderer () {
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 	console.log("elements");
 	console.log(elements);
-	myApp._serverCommunication.getClusteringAsync(elements, function(result) {
+	myApp._serverCommunication.getClusteringAsync(elements, domId, function(result) {
 		console.log("Printing Clustering Result");
 		console.log(result);
-		myApp.addClusteringResultToDataset(result, "test");
+		myApp.addClusteringResultToDataset(result.clusters, result.emittedData.variables);
 	});
+
 	console.log("Calculating Mean for domId " + domId);
 	myApp._serverCommunication.getMeanShapeAsync(elements, domId, settings, function(result) {
 		// Create Renderer
@@ -24,8 +25,9 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 		var myRenderer = new Renderer(result.domId, result.mean);
 
 	// TODO: Calculate differences in Odds Ratios!
-	// if(myApp._calculateOddsRatios)
-	// 	console.log(myApp._oddsRatioTableMatrix.compare(new OddsRatioTableMatrix(elements, myApp._data)));
+	if(myApp._calculateOddsRatios)
+		console.log(myApp._oddsRatioTableMatrix.compare(new OddsRatioTableMatrix(elements, myApp._data)));
+	// console.log(myApp._statistics.getCramerRankingList(myApp._data, elements));
 	}.bind(this));
 }
 
