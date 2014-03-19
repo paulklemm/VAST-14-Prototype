@@ -8,6 +8,8 @@ function App(){
 	this._masterRenderer = new MasterRenderer();
 	this._pivotTable = undefined;
 	this._statistics = new Statistics();
+	this._calculateOddsRatios = true;
+	this._oddsRatioTableMatrix = undefined;
 
 	debugMeshList = [];
 	debugScene = undefined;
@@ -44,6 +46,36 @@ App.prototype.compareGeometries = function(geometry1, geometry2) {
 	console.log("MeanDifferenceZ: " + meanDifferenceZ);
 }
 
+App.prototype.addClusteringResultToDataset = function(result, name) {
+	var keys = Object.keys(result);
+	var keyMap = myApp._data.zz_nr.data;
+	var clusteringEntry = {};
+	clusteringEntry.data = new Array(keyMap.length);
+	clusteringEntry.name = name;
+	clusteringEntry.invalidIndices = [];
+	clusteringEntry.description = {};
+	clusteringEntry.description.dataType = 'nominal';
+	clusteringEntry.description.detail = 'Clusterung Result of ' +  name;
+	clusteringEntry.description.dictionary = {};
+	for (var i = 0; i < 20; i++)
+		clusteringEntry.description.dictionary[i] = "Cluster " + i;
+	clusteringEntry.description.dictionary[99999] = "no Cluster";
+
+	for (var i = 0; i < keys.length; i++){
+		var position = keyMap.indexOf(keys[i] + ""); // + "" converts to string
+		clusteringEntry.data[position] = result[keys[i]];
+	}
+
+	for (var i = 0; i < clusteringEntry.data.length; i++)
+		if (clusteringEntry.data[i] == undefined) {
+			clusteringEntry.data[i] = 99999;
+			clusteringEntry.invalidIndices[i] = true;
+		}
+
+	myApp._data[name] = clusteringEntry;
+	console.log(clusteringEntry);
+}
+
 // App.prototype.removeFaultyData = function(_data) {
 // 	for (key in _data) {
 // 		// Do this only if data is not metric!
@@ -69,6 +101,11 @@ App.prototype.dataLoaded = function(){
 	console.log("Calculating bins ...");
 	this._statistics.createBinsForAllMetricVariables(this._data);
 	console.log("Calculating bins done");
+	if (this._calculateOddsRatios) {
+		console.log("Calculating Odds Ratios skipped");
+		//this._oddsRatioTableMatrix = new OddsRatioTableMatrix(undefined, this._data);
+		console.log("Calculating Odds Ratios done");
+	}
 }
 
 App.prototype.loadGroupDataAsync = function(callback) {

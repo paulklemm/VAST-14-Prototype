@@ -172,7 +172,20 @@ Statistics.prototype.getContingencyTable = function(x, y) {
 }
 
 Statistics.prototype.getOddsRatioTableDifference = function(tableX, tableY) {
-	var difference = 0;
+	// Lots of bad things can happen here, so we have to handle with special cases
+	// 1. Tables can be undefined - for example if Variable has to many manifestations
+	// and therefore the table calculations are way to computation heavy
+	if (tableX == undefined || tableY == undefined || tableX.length == 0 || tableY.length == 0)
+		return -1;
+
+	// 2. It is also possible that a list is empty - this happens when so many elements are
+	// removed that the variable has only one manifestation left 
+	//          Yes  
+	// ------|-------
+	//  Male |  23   
+	// Female|  20   
+	if ((tableX.length == 1 && tableX[0].length == 0) || (tableY.length == 1 && tableY[0].length == 0))
+		return -1;
 
 	var elementsAreMissing = false;
 	if (tableX.length != tableY.length || tableX[0].length != tableY[0].length)
@@ -189,19 +202,42 @@ Statistics.prototype.getOddsRatioTableDifference = function(tableX, tableY) {
 	else 
 		lengthY= tableY[0].length;
 
-	// for (var i = 0; i < tableX.length; i++)
-	// 	for (var j = 0; j < tableX[i].length; j++)
+	// 3. Elements in the Table can be NaN - which happens when a division 0/0 happens
+	// E.g.: [ [12, 11] [0, 0] ] (12 * 0) / (11 * 0)
+	// Problem is that Number + NaN = NaN so we have to handle that!
+	var difference = 0;
+	var cannotCompareCounter = 0;
 	for (var i = 0; i < lengthX; i++)
-		for (var j = 0; j < lengthY; j++)
-			difference = difference + Math.abs(tableX[i][j] - tableY[i][j]);
+		for (var j = 0; j < lengthY; j++) {
+			var currentDifference = Math.abs(tableX[i][j] - tableY[i][j]);
+			if (currentDifference == Infinity || isNaN(currentDifference))
+				cannotCompareCounter = cannotCompareCounter + 1;
+			else
+				difference = difference + currentDifference;
+		}
+
+	// if (difference == -1 || isNaN(difference) || difference == Infinity)
+	if (difference == -1 || isNaN(difference) || difference == Infinity)
+		console.log("This is weird!");
 
 	// var numberOfElements = tableX.length * tableX[0].length;
-	var numberOfElements = tableX * lengthY;
-	return { "difference": difference / numberOfElements, "elementsAreMissing": elementsAreMissing};
+	var numberOfElements = (lengthX * lengthY) - cannotCompareCounter;
+
+	// 4. If all table differences include invalid elements like Infinity or NaN it is
+	// possible that difference is 0 and numberOfElements is also 0 and 
+	// results in a 0/0 division which needs to be captured
+	if (difference == 0 && numberOfElements == 0)
+		return -1;
+
+	return {"difference": difference / numberOfElements,
+					"elementsAreMissing": elementsAreMissing,
+					'tableX': tableX,
+					'tableY': tableY};
 }
 
-Statistics.prototype.getOddsRatioTable = function(x, y, debug) {
-	var matchingValidData = this.getValidMatchingData(x, y);
+// ToDo Implement different Error types!
+Statistics.prototype.getOddsRatioTable = function(x, y, subjects, debug) {
+	var matchingValidData = this.getValidMatchingData(x, y, subjects);
 	var variableXValid = matchingValidData.variableXValid;
 	var variableYValid = matchingValidData.variableYValid;
 
@@ -213,12 +249,14 @@ Statistics.prototype.getOddsRatioTable = function(x, y, debug) {
 	var dimensionsListX = contingency.dimensionsListX;
 	var dimensionsListY = contingency.dimensionsListY;
 
+	// If Variable has to many manifestations and therefore
+	// the table calculations are way to computation heavy
 	if (dimensionsListX.length > 50) {
-		console.log(x.name + " has more than 50 elements (" + dimensionsListX.length + "). Aborting Ration Table caluclation");
+		// console.log(x.name + " has more than 50 elements (" + dimensionsListX.length + "). Aborting Ration Table caluclation");
 		return;
 	}
 		if (dimensionsListY.length > 50) {
-		console.log(x.name + " has more than 50 elements (" + dimensionsListY.length + "). Aborting Ration Table caluclation");
+		// console.log(x.name + " has more than 50 elements (" + dimensionsListY.length + "). Aborting Ration Table caluclation");
 		return;
 	}
 
@@ -237,6 +275,10 @@ Statistics.prototype.getOddsRatioTable = function(x, y, debug) {
 
 	if (debug) {
 		console.log(" --- Get odds Ratio ---");
+		console.log(" Dimension List X");
+		console.log(dimensionsListX);
+		console.log(" Dimension List Y");
+		console.log(dimensionsListY);
 		console.log(" Odds Ratio Table Dimension X: " + oddsRatioTableDimensionX);
 		console.log(" Odds Ratio Table Dimension Y: " + oddsRatioTableDimensionY);
 	}
@@ -344,7 +386,7 @@ Statistics.prototype.calculateChiSquare = function(x, y, debug, yatesCorrection,
 		suitability.reason +=  suitability.percentOfExpectedSmallerFive + "% of expected Values are smaller than 5";
 	}
 
-	//if (!suitability.isSuitable && pValue < 0.01 && pValue != 0 && debug)
+	if (!suitability.isSuitable && pValue < 0.01 && pValue != 0 && debug)
 		console.log(suitability.reason + "; pValue: " + pValue);
 
 	if (suitability.isSuitable) {
@@ -355,6 +397,7 @@ Statistics.prototype.calculateChiSquare = function(x, y, debug, yatesCorrection,
 	}
 }
 
+// ToDo This should be deleted soon
 Statistics.prototype.testOddsRatioWithAllVariables = function(data) {
 	var variables = Object.keys(data);
 	var result = [];
@@ -372,6 +415,7 @@ Statistics.prototype.testOddsRatioWithAllVariables = function(data) {
 	}
 	console.log(result);
 	// TODO HIER WEITERMACHEN!
+
 }
 // ToDo This is broken
 Statistics.prototype.testOddsRatio = function(x, y) {
@@ -439,7 +483,7 @@ Statistics.prototype.testOddsRatio = function(x, y) {
 	console.log("oddsTableDifference: " + oddsTableDifference.difference + ", Elements are missing: " + oddsTableDifference.elementsAreMissing);
 }
 
-Statistics.prototype.getValidMatchingData = function(x, y) {
+Statistics.prototype.getValidMatchingDataOld = function(x, y, elements) {
 	var variableXValid = [];
 	var variableYValid = [];
 
@@ -457,6 +501,37 @@ Statistics.prototype.getValidMatchingData = function(x, y) {
 			}
 			else
 				variableYValid.push(y.data[k]);
+		}
+	}
+
+	return {"variableXValid": variableXValid, "variableYValid": variableYValid}
+}
+
+Statistics.prototype.getValidMatchingData = function(x, y, subjects) {
+	var variableXValid = [];
+	var variableYValid = [];
+	var validSubjects = [];
+	if (subjects != undefined)
+		for (var i = 0; i < subjects.length; i++) {
+			var currentSubject = subjects[i];
+			var currentSubjectPosition = myApp._data.zz_nr.data.indexOf(currentSubject + '');
+			validSubjects[currentSubjectPosition] = true;
+		}
+	for (var k = 0; k < x.data.length; k++) {
+		if (subjects == undefined || validSubjects[k] == true) {
+			if (x.invalidIndices[k] == undefined && y.invalidIndices[k] == undefined) {
+				if(x.description.dataType == 'metric') {
+					variableXValid.push((x.binnedData.data[k]).toString());
+				}
+				else
+					variableXValid.push(x.data[k]);
+				
+				if(y.description.dataType == 'metric') {
+					variableYValid.push((y.binnedData.data[k]).toString());
+				}
+				else
+					variableYValid.push(y.data[k]);
+			}
 		}
 	}
 

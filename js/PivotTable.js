@@ -11,7 +11,8 @@ PivotTable.prototype.convertDataset = function(dataset, dataKeys) {
 
 	for (var i = 0; i < dataKeys.length; i++)
 		for (var j = 0; j < pivotDataset.length; j++)
-			pivotDataset[j][dataset[dataKeys[i]].description.detail] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
+			// pivotDataset[j][dataset[dataKeys[i]].description.detail] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
+		pivotDataset[j][dataset[dataKeys[i]].name] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
 	return pivotDataset;
 }
 

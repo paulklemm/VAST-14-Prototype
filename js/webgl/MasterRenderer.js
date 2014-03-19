@@ -5,8 +5,12 @@ function MasterRenderer () {
 }
 
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
+	console.log("elements");
+	console.log(elements);
 	myApp._serverCommunication.getClusteringAsync(elements, function(result) {
+		console.log("Printing Clustering Result");
 		console.log(result);
+		myApp.addClusteringResultToDataset(result, "test");
 	});
 	console.log("Calculating Mean for domId " + domId);
 	myApp._serverCommunication.getMeanShapeAsync(elements, domId, settings, function(result) {
@@ -17,7 +21,11 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 		if (result.settings != undefined)
 			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList[result.settings.calculateMean]);
 		
-		var myRenderer = new Renderer(result.domId, result.mean); 
+		var myRenderer = new Renderer(result.domId, result.mean);
+
+	// TODO: Calculate differences in Odds Ratios!
+	// if(myApp._calculateOddsRatios)
+	// 	console.log(myApp._oddsRatioTableMatrix.compare(new OddsRatioTableMatrix(elements, myApp._data)));
 	}.bind(this));
 }
 
@@ -25,9 +33,9 @@ MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometr
 	// Create Color Scale
 	var colorScale = d3.scale.linear().domain([0,4]).range(["blue","red"]);
 	for (var i = 0; i < geometry1.faces.length; i++) { // Parse all Vertices
-		differenceA = 0;
-		differenceB = 0;
-		differenceC = 0;
+		var differenceA = 0;
+		var differenceB = 0;
+		var differenceC = 0;
 		// geometry1.faces[i].vertexColors[0]
 		differenceA = differenceA + Math.abs(geometry1.vertices[geometry1.faces[i].a].x - geometry2.vertices[geometry2.faces[i].a].x);
 		differenceA = differenceA + Math.abs(geometry1.vertices[geometry1.faces[i].a].y - geometry2.vertices[geometry2.faces[i].a].y);
