@@ -33,9 +33,14 @@ PivotTable.prototype.convertDataset = function(dataset, dataKeys) {
 		pivotDataset[i] = {};
 
 	for (var i = 0; i < dataKeys.length; i++)
-		for (var j = 0; j < pivotDataset.length; j++)
+		for (var j = 0; j < pivotDataset.length; j++) {
 			// pivotDataset[j][dataset[dataKeys[i]].description.detail] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
-		pivotDataset[j][dataset[dataKeys[i]].name] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
+			// pivotDataset[j][dataset[dataKeys[i]].name] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
+			var value = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
+			if (value == undefined && dataset[dataKeys[i]].binnedData != undefined)
+				value = dataset[dataKeys[i]].binnedData.dictionary[dataset[dataKeys[i]].binnedData.data[j]];
+			pivotDataset[j][dataset[dataKeys[i]].name] = value;
+		}
 	return pivotDataset;
 }
 
