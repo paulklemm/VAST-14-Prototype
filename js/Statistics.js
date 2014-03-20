@@ -99,22 +99,69 @@ Statistics.prototype.sortCramerVMatrix = function(matrix, mode, variable) {
 	
 	var dimension = matrix[variable];
 	var dimensionEntries = d3.entries(dimension);
+	var validDimensionEntries = [];
 	// Remove all NaN Values
 	for (var i = 0; i < dimensionEntries.length; i++)
-		if (isNaN(dimensionEntries[i].value))
-			dimensionEntries[i] = undefined;
+		if (!isNaN(dimensionEntries[i].value))
+			//dimensionEntries[i] = undefined;
+			validDimensionEntries.push(dimensionEntries[i]);
 	
 	if (mode == "descending")
-		sorted = dimensionEntries.sort(function(a, b) {return d3.ascending(a.value, b.value);});
+		// sorted = dimensionEntries.sort(function(a, b) {return d3.ascending(a.value, b.value);});
+		sorted = validDimensionEntries.sort(function(a, b) {return d3.descending(a.value, b.value);});
+	else
+		sorted = validDimensionEntries.sort(function(a, b) {return d3.ascending(a.value, b.value);});
 	return sorted;
+}
+
+// Statistics.prototype.getCramerVForVariable = function(data, variable) {
+// 	var variables = Object.keys(data);
+// 	var matrix = {};
+// 	var result = [];
+
+// 	for (var i = 0; i < variables.length; i++) {
+
+// 		for (var j = 0; j < variables.length; j++) {
+// 			// Create Entries for on the very first loop
+// 			if (matrix[variables[j]] == undefined) 
+// 				matrix[variables[j]] = {};
+
+// 			if (i != j && j > i) {
+// 				var craimersV = this.getCramersVIncremental(data[variables[i]], data[variables[j]], 10, subjects);
+// 				matrix[variables[i]][variables[j]] = craimersV;
+// 			}
+// 		}
+// 	}
+// 	return matrix;
+// }
+
+Statistics.prototype.updateCramerVMatrix = function(matrix, data, subjects) {
+	var variables = Object.keys(data);
+	for (var i = 0; i < variables.length; i++) {
+		if (this._variablesToIgnore[variables[i]] == undefined)
+			for (var j = 0; j < variables.length; j++) {
+				// Create Entries for on the very first loop
+				if (matrix[variables[j]] == undefined) 
+					matrix[variables[j]] = {};
+
+				if (i != j && j > i) {
+					if (matrix[variables[i]][variables[j]] === undefined) { // === because == would also give true for 'null'
+						var craimersV = this.getCramersVIncremental(data[variables[i]], data[variables[j]], 10, subjects);
+						matrix[variables[i]][variables[j]] = craimersV;
+						matrix[variables[j]][variables[i]] = craimersV; // Mirror!
+					}
+				}
+			}
+	}
+	// return result;
+	return matrix;
 }
 
 Statistics.prototype.getCramerVMatrix = function(data, subjects) {
 	var variables = Object.keys(data);
 	var matrix = {};
-	var result = [];
 	for (var i = 0; i < variables.length; i++) {
-		console.log("Processing Variable " + variables[i]);
+		//console.log("Processing Variable " + variables[i]);
 		if (this._variablesToIgnore[variables[i]] == undefined)
 			for (var j = 0; j < variables.length; j++) {
 				// Create Entries for on the very first loop

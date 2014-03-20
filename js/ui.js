@@ -2,6 +2,7 @@ var ui = {};
 
 ui.dragging = {};
 ui.resizing = {};
+ui.hack = {};
 // https://stackoverflow.com/questions/18660269/collapsible-responsive-sidebar-menu-with-jquery-and-bootstrap-3
 // https://stackoverflow.com/questions/15391325/how-to-collapse-expand-list-using-bootstrap-jquery
 ui.createSidebar = function() {
@@ -121,6 +122,25 @@ ui.createContainer = function(e, id) {
 	detail.id = id;
 	detail.containerId = '#' + containerId;
 	myApp.createMatchingVisualization(detail);
+}
+
+/* +++++++++++++++++++++++++++++++ */
+// TODO: HACK VIS
+ui.hack.appendCramersResultToDiv = function(variable) {
+	//var cramersVRow = myApp._cramersVMatrix[variable];
+	sortedCramerList = myApp._statistics.sortCramerVMatrix(myApp._cramersVMatrix, "descending", variable);
+	// console.log("sortedCramerList");
+	// console.log(sortedCramerList);
+	var htmlString = "";
+
+	htmlString = htmlString + "<b>" + variable + "</b>";
+	htmlString = htmlString + "<ul>";
+	for (var i = 0; i < sortedCramerList.length; i++)
+		if (sortedCramerList[i].value > 0.1)
+			htmlString = htmlString + "<li>" + sortedCramerList[i].value + " - " + myApp._data[sortedCramerList[i].key].description.detail + " - " + sortedCramerList[i].key +  "</li>";
+	htmlString = htmlString + "</ul>";
+
+	$('#statistic p').prepend(htmlString);
 }
 
 /* +++++++++++++++++++++++++++++++ */

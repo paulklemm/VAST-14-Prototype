@@ -11,6 +11,8 @@ function App(){
 	this._calculateOddsRatios = false;
 	this._oddsRatioTableMatrix = undefined;
 	this._zz_nrHash = undefined
+	this._cramersVMatrix = undefined;
+	this._saveTimeOnStartup = true; // this reads cramersV from disk
 
 	debugMeshList = [];
 	debugScene = undefined;
@@ -51,10 +53,10 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 	var keys = Object.keys(result);
 	var keyMap = myApp._data.zz_nr.data;
 	var clusteringEntry = {};
-	name = name.replace(' ', '');
-	name = name.replace('#', '');
-	name = name.replace('#', '');
-	console.log("Stripped Name: " + name);
+	// name = name.replace(' ', '');
+	// name = name.replace('#', '');
+	// name = name.replace('#', '');
+	// console.log("Stripped Name: " + name);
 	clusteringEntry.data = new Array(keyMap.length);
 	clusteringEntry.name = name;
 	clusteringEntry.invalidIndices = [];
@@ -78,7 +80,11 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 		}
 
 	myApp._data[name] = clusteringEntry;
-	console.log("Appending " + name + " to data");
+	// Update CramersV Matrix
+	myApp._statistics.updateCramerVMatrix(myApp._cramersVMatrix, myApp._data);
+	ui.hack.appendCramersResultToDiv(name);
+	// Append to Pivot Table
+	myApp._pivotTable.update([name]);
 
 	// Now attach it to the side view
 	// Cluster Position
@@ -126,6 +132,7 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 App.prototype.dataLoaded = function(){
 	this.constructCrossfilterDataset();
 	this.loadGroupDataAsync(ui.createSidebar);
+	// this._pivotTable = new PivotTable('#pivotTable', this._data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
 	this._statistics.removeFaultyData(this._data);
 	this._masterRenderer.calculateGlobalMean();
@@ -137,6 +144,14 @@ App.prototype.dataLoaded = function(){
 		this._oddsRatioTableMatrix = new OddsRatioTableMatrix(undefined, this._data);
 		console.log("Calculating Odds Ratios done");
 	}
+
+	// Create Cramers V for all subjects
+	if (this._saveTimeOnStartup)
+		d3.json("data/cramersVMatrix.json", function(json) {
+			this._cramersVMatrix = json;
+		}.bind(this));
+	else
+		this._cramersVMatrix = this._statistics.getCramerVMatrix(this._data);
 
 	// Create Hash Table of IDs to fast gain access for it
 	this._zz_nrHash = {};
@@ -181,6 +196,7 @@ App.prototype.createMatchingVisualization = function(detail) {
 		vis = new Barchart(detail.containerId, detail.id);
 	detail.visualization = vis;
 	myApp._visualizations.push(detail);
+	myApp._pivotTable.update([detail.id]);
 }
 
 App.prototype.removeRegisteredVisualization = function(containerId) {

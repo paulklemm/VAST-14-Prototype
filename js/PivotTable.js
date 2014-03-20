@@ -1,6 +1,29 @@
-function PivotTable (containerSelector, data) {
+function PivotTable (containerSelector, data, dataVariables) {
 	this._container = containerSelector;
-	this.create(this.convertDataset(data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]));
+	this._data = data;
+	this._dataVariables = dataVariables;
+	this.update(dataVariables);
+	
+	// if (dataVariables != undefined)
+	// 	this._pivotUI = this.create(this.convertDataset(data, dataVariables));
+}
+
+PivotTable.prototype.update = function(dataVariables) {
+	if (dataVariables == undefined)
+		return;
+	// Get Configuration
+	if (this._pivotUI != undefined) {
+		var configuration = this._pivotUI.data().pivotUIOptions;
+		// Remove Pivot Table
+		$(this._container + " table").remove();
+		// and create the new one
+		this._dataVariables = this._dataVariables.concat(dataVariables);
+		this._pivotUI = this.create(this.convertDataset(this._data, this._dataVariables), configuration.rows, configuration.cols);
+	}
+	else {
+		this._dataVariables = dataVariables;
+		this._pivotUI = this.create(this.convertDataset(this._data, this._dataVariables));
+	}
 }
 
 PivotTable.prototype.convertDataset = function(dataset, dataKeys) {
@@ -16,6 +39,10 @@ PivotTable.prototype.convertDataset = function(dataset, dataKeys) {
 	return pivotDataset;
 }
 
-PivotTable.prototype.create = function(data) {
-	$(this._container).pivotUI(data, { rows: ["S2_CHRO_22A"], cols: ["SEX_SHIP2"] });
+PivotTable.prototype.create = function(data, rows, columns) {
+	if (rows == undefined)
+		rows = [];
+	if (columns == undefined)
+		columns = [];
+	return $(this._container).pivotUI(data, { rows: rows, cols: columns });
 }
