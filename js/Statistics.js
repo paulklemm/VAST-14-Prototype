@@ -10,7 +10,6 @@ Statistics.prototype.createBinsForAllMetricVariables = function(data) {
 }
 
 Statistics.prototype.createBins = function(variable, numberOfBins, debug) {
-	debug = false;
 	if (variable.description.dataType == 'metric') {
 		// For metric variables it can be assumed that all entries of the Data Dictionary
 		// stand for error Values
@@ -40,18 +39,29 @@ Statistics.prototype.createBins = function(variable, numberOfBins, debug) {
 		var minimum = d3.min(validEntries);
 		var maximum = d3.max(validEntries);
 		var binSteps = (maximum - minimum) / numberOfBins;
+		// Store Description about the bins
+		var dictionary = {};
+		for (var i = 0; i < numberOfBins; i++)
+			dictionary[i] = minimum + (i * binSteps) + " - " + (minimum + ((i + 1) * binSteps));
 
 		// Store the infrormation about the bins
 		variable.binnedData.minimum = minimum;
 		variable.binnedData.maximum = maximum;
 		variable.binnedData.steps = binSteps;
 		variable.binnedData.binNumber = numberOfBins;
+		variable.binnedData.dictionary = dictionary;
+
 
 		for (var i = 0; i < variable.data.length; i++)
 			if (variable.invalidIndices[i] == undefined)
-				variable.binnedData.data[i] = parseInt((parseFloat(variable.data[i]) - minimum) / binSteps);
+				// The formula for calculating the bins would be equal to numberOfBins
+				// for the highest value, so we intercept this case and set it hard
+				if (variable.data[i] == maximum)
+					variable.binnedData.data[i] = numberOfBins - 1;
+				else
+					variable.binnedData.data[i] = parseInt((parseFloat(variable.data[i]) - minimum) / binSteps);
 
-		if (debug) {
+		if (debug != undefined && debug == true) {
 			for (var i = 0; i < variable.data.length; i++) {
 				console.log("[" + i + "] Binned entry " + variable.data[i] + " to bin " + variable.binnedData.data[i]);
 			}
@@ -79,6 +89,9 @@ Statistics.prototype.createBins = function(variable, numberOfBins, debug) {
 // 	return sorted;
 // }
 
+// Usage
+// matrix = myApp._statistics.getCramerVMatrix(myApp._data)
+// myApp._statistics.sortCramerVMatrix(matrix, undefined, "vis0renderWindow_1")
 Statistics.prototype.sortCramerVMatrix = function(matrix, mode, variable) {
 	var sorted;
 	if (mode == undefined)

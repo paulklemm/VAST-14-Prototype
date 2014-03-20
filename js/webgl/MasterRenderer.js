@@ -4,13 +4,25 @@ function MasterRenderer () {
 	this._geometryList = {};
 }
 
+MasterRenderer.prototype.calculateGlobalMean = function() {
+	var elements = [];
+	for (var i = 0; i < myApp._data.zz_nr.data.length; i++)
+		elements.push(myApp._data.zz_nr.data[i]);
+
+	myApp._serverCommunication.getMeanShapeAsync(elements, undefined, undefined, function(result) {
+		this._geometryList['globalMean'] = result.mean;
+	}.bind(this));
+}
+
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 	console.log("elements");
 	console.log(elements);
-	myApp._serverCommunication.getClusteringAsync(elements, domId, function(result) {
+	myApp._serverCommunication.getClusteringAsync(elements, domId, settings, function(result) {
 		console.log("Printing Clustering Result");
 		console.log(result);
-		myApp.addClusteringResultToDataset(result.clusters, result.emittedData.variables);
+		//myApp.addClusteringResultToDataset(result.clusters, result.emittedData.variables);
+		console.log("Clustering: Put Name " + result.emittedData.settings.name);
+		myApp.addClusteringResultToDataset(result.clusters, result.emittedData.settings.name);
 	});
 
 	console.log("Calculating Mean for domId " + domId);
@@ -19,8 +31,10 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 		this._geometryList[result.domId] = result.mean;
 
 		// Calculate Color Scale if wanted
-		if (result.settings != undefined)
+		if (result.settings != undefined && result.settings.calculateMean != undefined)
 			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList[result.settings.calculateMean]);
+		else // Set Color from differences to global mean
+			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList['globalMean']);
 		
 		var myRenderer = new Renderer(result.domId, result.mean);
 

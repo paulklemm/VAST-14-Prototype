@@ -92,8 +92,6 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 		children = myApp._listView._groups[position].children;
 		myApp._listView._groups.pop(position);
 		position = undefined;
-		console.log("children");
-		console.log(children);
 	}
 	myApp._listView.updateList();
 	ui.dragging.attachDragLogic();
@@ -130,6 +128,7 @@ App.prototype.dataLoaded = function(){
 	this.loadGroupDataAsync(ui.createSidebar);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
 	this._statistics.removeFaultyData(this._data);
+	this._masterRenderer.calculateGlobalMean();
 	console.log("Calculating bins ...");
 	this._statistics.createBinsForAllMetricVariables(this._data);
 	console.log("Calculating bins done");

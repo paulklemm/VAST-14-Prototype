@@ -8,15 +8,19 @@ function Barchart(containerId, variable){
 
 // Resize: https://groups.google.com/forum/#!topic/d3-js/mTBxTLi0q1o
 Barchart.prototype.createDataset = function(removeErroreVariables){
-
-  var data = myApp._data[this._variable];
+  var variable = myApp._data[this._variable];
+  var data;
+  if (variable.description.dataType == 'metric')
+    data = variable.binnedData.data; // Use binned data for data!
+  else
+    data = variable.data;
 	var displayData = [];
 	//displayData.names = [];
 	//displayData.frequency = [];
 	var datamap = [];
 
-	for (var i = 0; i < data.data.length; i++) {
-		var currentElement = data.data[i];
+	for (var i = 0; i < data.length; i++) {
+		var currentElement = data[i];
 		var index = datamap.indexOf(currentElement);
 		if (index != -1) // increase counter
 			displayData[index].frequency = displayData[index].frequency + 1;
@@ -32,7 +36,7 @@ Barchart.prototype.createDataset = function(removeErroreVariables){
   if (removeErroreVariables)
   errorVariables = [];
   for (var i = 0; i < displayData.length; i++)
-    if (parseInt(displayData[i].name) > 500){
+    if (parseInt(displayData[i].name) > 500 || displayData[i].name == undefined){
       displayData.splice(i, 1);
       i = i - 1;
     }
@@ -56,7 +60,12 @@ Barchart.prototype.create = function(){
       .scale(x)
       .orient("bottom")
       // .tickFormat(function(d) { console.log(myApp._data[this._variable]); }.bind(this));
-      .tickFormat(function(d) { return myApp._data[this._variable].description.dictionary[d] }.bind(this));
+      .tickFormat(function(d) { 
+        if(myApp._data[this._variable].description.dataType == 'metric')
+          return myApp._data[this._variable].binnedData.dictionary[d];
+        else
+          return myApp._data[this._variable].description.dictionary[d]; 
+      }.bind(this));
       //data.description.dictionary[currentElement]
 // myApp._data[this._variable]
 // data.description.dictionary[currentElement]
@@ -114,22 +123,21 @@ Barchart.prototype.create = function(){
     .attr("height", function(d) { return height - y(d.frequency); });
 
 
-  // var foreignObjectMain = enter.append("foreignObject")
-
-  //   .attr("x", function(d) { return x(d.name) + 60; })
-  //   .attr("width", x.rangeBand())
-  //   .attr("y", function(d) { return y(d.frequency); })
-  //   .attr("height", function(d) { return height - y(d.frequency); });
-
-  // var foreignObject = foreignObjectMain.append("xhtml:div")
-  //   .attr('xmlns', "http://www.w3.org/1999/xhtml")
-  //   .attr('class', 'renderDiv')
-  //   .attr("id", function(d, i) { return 'renderWindow_' + d.name; });
-
-
   // Request Render Window
   var elementList = {};
-  var data = myApp._data[this._variable];
+
+  var variable = myApp._data[this._variable];
+  var data;
+  var dictionary;
+  if (variable.description.dataType == 'metric') {
+    data = variable.binnedData; // Use binned data for data!
+    dictionary = variable.binnedData.dictionary;
+  }
+  else {
+    data = variable;
+    dictionary = variable.description.dictionary;
+  }
+
   for (var i in data.data) {
     var currentElement = data.data[i];
     if (!elementList.hasOwnProperty(currentElement))
@@ -141,11 +149,12 @@ Barchart.prototype.create = function(){
   
   if (foreignObject[0].length > 2)
     for (var i = 0; i < foreignObject[0].length; i++) {
-      myApp._masterRenderer.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id);
+      // console.log(data.dictionary[elementList[foreignObject[0][i].__data__.name]]);
+      myApp._masterRenderer.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]});
     }
   else { // Calculate Mean Shapes
-    myApp._masterRenderer.calculateMean(elementList[foreignObject[0][0].__data__.name], this._containerId + " #" + foreignObject[0][0].id);
-    myApp._masterRenderer.calculateMean(elementList[foreignObject[0][1].__data__.name], this._containerId + " #" + foreignObject[0][1].id, { "calculateMean":  this._containerId + " #" + foreignObject[0][0].id});
+    myApp._masterRenderer.calculateMean(elementList[foreignObject[0][0].__data__.name], this._containerId + " #" + foreignObject[0][0].id, {"name": variable.name + ": " + dictionary[foreignObject[0][0].__data__.name]});
+    myApp._masterRenderer.calculateMean(elementList[foreignObject[0][1].__data__.name], this._containerId + " #" + foreignObject[0][1].id, { "calculateMean":  this._containerId + " #" + foreignObject[0][0].id, "name": variable.name + ": " + dictionary[foreignObject[0][1].__data__.name]});
   }
   
 }
