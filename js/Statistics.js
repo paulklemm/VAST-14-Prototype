@@ -1,11 +1,12 @@
 function Statistics() {
+	this._variablesToIgnore = {"GEBURTSTAG_SHIP2":true, "EXDATE_SHIP2":true, "S2_SOZIO_13":true, "zz_nr":true};
 }
 
 Statistics.prototype.createBinsForAllMetricVariables = function(data) {
 	var keys = Object.keys(data);
 	for (var i = 0; i < keys.length; i++)
 		if (data[keys[i]].description.dataType == 'metric')
-			this.createBins(data[keys[i]], 3);
+			this.createBins(data[keys[i]], 4);
 }
 
 Statistics.prototype.createBins = function(variable, numberOfBins, debug) {
@@ -78,18 +79,48 @@ Statistics.prototype.createBins = function(variable, numberOfBins, debug) {
 // 	return sorted;
 // }
 
+Statistics.prototype.sortCramerVMatrix = function(matrix, mode, variable) {
+	var sorted;
+	if (mode == undefined)
+		mode = "descending";
+	
+	var dimension = matrix[variable];
+	var dimensionEntries = d3.entries(dimension);
+	// Remove all NaN Values
+	for (var i = 0; i < dimensionEntries.length; i++)
+		if (isNaN(dimensionEntries[i].value))
+			dimensionEntries[i] = undefined;
+	
+	if (mode == "descending")
+		sorted = dimensionEntries.sort(function(a, b) {return d3.ascending(a.value, b.value);});
+	return sorted;
+}
+
 Statistics.prototype.getCramerVMatrix = function(data, subjects) {
 	var variables = Object.keys(data);
 	var matrix = {};
 	var result = [];
 	for (var i = 0; i < variables.length; i++) {
-		matrix[variables[i]] = {}; // Create new Matrix Entry
-		for (var j = 0; j < variables.length; j++) {
-			if (i != j && j > i) {
-				var craimersV = this.getCramersVIncremental(data[variables[i]], data[variables[j]], 5, subjects);
-				matrix[variables[i]][variables[j]] = craimersV;
+		console.log("Processing Variable " + variables[i]);
+		if (this._variablesToIgnore[variables[i]] == undefined)
+			for (var j = 0; j < variables.length; j++) {
+				// Create Entries for on the very first loop
+				if (matrix[variables[j]] == undefined) 
+					matrix[variables[j]] = {};
+
+				if (i != j && j > i) {
+					var craimersV = this.getCramersVIncremental(data[variables[i]], data[variables[j]], 10, subjects);
+					matrix[variables[i]][variables[j]] = craimersV;
+					matrix[variables[j]][variables[i]] = craimersV; // Mirror!
+					// if (variables[j] == "vis0renderWindow_2")
+					// 	console.log(matrix[variables[j]][variables[i]]);
+
+					// if (variables[j] == "vis0renderWindow_2") {
+					// 	console.log("matrix[" + variables[j] + "][" + variables[i] + "]");
+					// 	console.log(matrix[variables[j]][variables[i]]);
+					// }
+				}
 			}
-		}
 	}
 	// return result;
 	return matrix;

@@ -178,7 +178,7 @@ App.prototype.loadDataAsync = function(callback) {
 
 App.prototype.createMatchingVisualization = function(detail) {
 	var type = this._data[detail.id].description.dataType;
-	if (type == 'dichotomous' || type == 'ordinal')
+	if (type == 'dichotomous' || type == 'ordinal' || type == 'metric')
 		vis = new Barchart(detail.containerId, detail.id);
 	detail.visualization = vis;
 	myApp._visualizations.push(detail);
