@@ -22,6 +22,20 @@ function App(){
 	//this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
 	this.loadDataAsync(this.dataLoaded.bind(this));
 };
+
+App.prototype.createVariableForAllSubjects = function() {
+	var length = this._data.zz_nr.data.length;
+	var newVar = {};
+	var data = [];
+	for (var i = 0; i < length; i++)
+		data.push(0);
+	newVar.data = data;
+	newVar.invalidIndices = [];
+	var dictionary = {'0': 'all'}
+	newVar.description = {"dataType": 'ordinal', "detail": "All Variables", "name": "all", "dictionary": dictionary};
+	this._data["all"] = newVar;
+}
+
 // myApp.compareGeometries(geometryList[0], geometryList[1])
 App.prototype.compareGeometries = function(geometry1, geometry2) {
 	meanDifference = 0;
@@ -131,6 +145,7 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 
 App.prototype.dataLoaded = function(){
 	this.constructCrossfilterDataset();
+	this.createVariableForAllSubjects(); // One Variable which contains all subjects - used for clustering
 	this.loadGroupDataAsync(ui.createSidebar);
 	// this._pivotTable = new PivotTable('#pivotTable', this._data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);

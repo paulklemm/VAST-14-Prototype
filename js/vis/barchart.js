@@ -147,7 +147,7 @@ Barchart.prototype.create = function(){
   // console.log(foreignObject);
   // console.log("foreignObject[0].length" + foreignObject[0].length);
   
-  if (foreignObject[0].length > 2)
+  if (foreignObject[0].length != 2)
     for (var i = 0; i < foreignObject[0].length; i++) {
       // console.log(data.dictionary[elementList[foreignObject[0][i].__data__.name]]);
       myApp._masterRenderer.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]});

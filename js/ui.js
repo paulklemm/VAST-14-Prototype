@@ -107,7 +107,8 @@ ui.createContainer = function(e, id) {
 	panel.style.top = correctedY + 'px';
 	// make it dragable and resizable
 	$('.viscontainer')
-		.draggable( {containment: "parent", handle: "div.panel-heading"} )
+	// TODO: FIX Scrolling Overflow: https://stackoverflow.com/questions/11122490/jquery-draggable-with-containment-parent-wont-scroll
+		.draggable( {containment: "parent", handle: "div.panel-heading", scroll: true} )
 		.resizable( {containment: "parent", 
 			resize: ui.resizing.resize} );
 
