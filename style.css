@@ -1,3 +1,12 @@
+#pivotTable .node {
+	border: solid 1px white;
+	font: 10px sans-serif;
+	line-height: 12px;
+	overflow: hidden;
+	position: absolute;
+	text-indent: 2px;
+}
+
 .over {
 	border: 3px dashed #000;
 	color:red;
@@ -17,12 +26,14 @@
   /*border: 1px solid black;*/
   overflow:scroll;
   /*position:absolute;*/
-  min-height:1000px;
+  /*min-height:1000px;*/
+  min-height:830px;
   /*max-height:1000px;*/
 }
 
 .well{
-	max-height:1000px;
+	/*max-height:1000px;*/
+	max-height:830px;
 	overflow-y: scroll;
   overflow-x: scroll;
 }
@@ -37,7 +48,8 @@ svg {
 }
 
 .viscontainer {
-	min-height:350px;
+	/*min-height:350px;*/
+	min-height:300px;
 	min-width: 800px;
 }
 

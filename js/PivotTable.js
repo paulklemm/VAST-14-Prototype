@@ -3,7 +3,7 @@ function PivotTable (containerSelector, data, dataVariables) {
 	this._data = data;
 	this._dataVariables = dataVariables;
 	this.update(dataVariables);
-	
+	this._renderers = $.extend($.pivotUtilities.renderers, $.pivotUtilities.d3_renderers);
 	// if (dataVariables != undefined)
 	// 	this._pivotUI = this.create(this.convertDataset(data, dataVariables));
 }
@@ -36,7 +36,11 @@ PivotTable.prototype.convertDataset = function(dataset, dataKeys) {
 		for (var j = 0; j < pivotDataset.length; j++) {
 			// pivotDataset[j][dataset[dataKeys[i]].description.detail] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
 			// pivotDataset[j][dataset[dataKeys[i]].name] = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
-			var value = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
+			if (dataset[dataKeys[i]].description.dictionary != undefined) // Some Variables dont have a dictionary!
+				var value = dataset[dataKeys[i]].description.dictionary[dataset[dataKeys[i]].data[j]];
+			else 
+				value = undefined;
+			
 			if (value == undefined && dataset[dataKeys[i]].binnedData != undefined)
 				value = dataset[dataKeys[i]].binnedData.dictionary[dataset[dataKeys[i]].binnedData.data[j]];
 			pivotDataset[j][dataset[dataKeys[i]].name] = value;
@@ -49,5 +53,5 @@ PivotTable.prototype.create = function(data, rows, columns) {
 		rows = [];
 	if (columns == undefined)
 		columns = [];
-	return $(this._container).pivotUI(data, { rows: rows, cols: columns });
+	return $(this._container).pivotUI(data, { renderers: this._renderers, rows: rows, cols: columns });
 }
