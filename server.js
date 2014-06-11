@@ -109,7 +109,8 @@ var getMeshFileAsync = function(filename, callback) {
 }
 
 var getSHIPDatasetAsync = function(callback) {
-	fs.readFile('./data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json', 'utf8', function (err,data) {
+	//fs.readFile('./data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json', 'utf8', function (err,data) {
+	fs.readFile('./data/ship-data/data/shipdata/SHIP_2013_combined/SHIP_2013_combined_image.json', 'utf8', function (err,data) {
 		if (err)
 			return console.log(err);
 		else
@@ -155,8 +156,8 @@ var loadAllMeshesAsync = function(callback) {
 	getSHIPDatasetAsync(function(ship) {
 		// Convert to Index Dataset
 		var validIds = {};
-		for (var i = 0; i < ship['zz_nr'].data.length; i++)
-			validIds[ship['zz_nr'].data[i]] = true;
+		for (var i = 0; i < ship['zz_nr'].dataT0.length; i++)
+			validIds[ship['zz_nr'].dataT0[i]] = true;
 		
 		getMeshFileNamesAsync(function(files) {
 			// preprocess files array to only include meshes needed

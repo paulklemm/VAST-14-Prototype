@@ -145,7 +145,16 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 // }
 
 App.prototype.dataLoaded = function(){
-	this.constructCrossfilterDataset();
+	// DEBUG VIS FINAL: Aggregate data set from SHIP_T0 to data
+	this._dataUntouched = this._data;
+	var datakeys = Object.keys(this._data);
+	for (var i = 0; i < datakeys.length; i++) {
+		this._data[datakeys[i]].data = this._data[datakeys[i]].dataT0;
+		if (this._data[datakeys[i]].description.cohort != 'all')
+			delete this._data[datakeys[i]];
+	}
+
+	//this.constructCrossfilterDataset();
 	this.createVariableForAllSubjects(); // One Variable which contains all subjects - used for clustering
 	this.loadGroupDataAsync(ui.createSidebar);
 	// this._pivotTable = new PivotTable('#pivotTable', this._data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]);
@@ -163,7 +172,8 @@ App.prototype.dataLoaded = function(){
 
 	// Create Cramers V for all subjects
 	if (this._saveTimeOnStartup)
-		d3.json("data/cramersVMatrix.json", function(json) {
+		// d3.json("data/cramersVMatrix.json", function(json) {
+		d3.json("data/cramersVMatrix_all.json", function(json) {
 			this._cramersVMatrix = json;
 		}.bind(this));
 	else
@@ -176,7 +186,8 @@ App.prototype.dataLoaded = function(){
 }
 
 App.prototype.loadGroupDataAsync = function(callback) {
-	var filePath = "data/ship-data/data/shipdata/groups-S2.json";
+	// var filePath = "data/ship-data/data/shipdata/groups-S2.json";
+	var filePath = "data/ship-data/data/shipdata/groups_complete_all.json";
 	var app = this;
 
 	d3.json(filePath, function(groups){
@@ -196,7 +207,8 @@ App.prototype.loadGroupDataAsync = function(callback) {
 }
 
 App.prototype.loadDataAsync = function(callback) {
-	var filePath = 'data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json';
+	//var filePath = 'data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json';
+	var filePath = 'data/ship-data/data/shipdata/SHIP_2013_combined/SHIP_2013_combined_image.json';
 	var app = this; // Reference this objects, since it wont be available in the callback
 	d3.json(filePath, function(data){
 		app._data = data; // set data
