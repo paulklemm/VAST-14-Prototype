@@ -11,16 +11,22 @@
 	<link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" media="screen"> <!-- Bootstrap -->
 </head>
 <body>
+<div id="slide-panel">
+	<a href="#" class="btn btn-info" id="opener"><i class="glyphicon glyphicon-signal"></i> Correlations</a>
+		<div class="well" id="statistic" style="min-height:300px">
+			<p></p>
+		</div>
+</div>
 
 <div class="container-full">
 	<div class="page-header">
-		<h1>VIS'14 Prototype</h1>
+		<!-- <h1>VIS'14 Prototype</h1> -->
 	</div>
 </div>
 
 <div class="container-full">
 	<div class="row-fluid">
-		<div class="col-md-2">
+		<div class="col-md-2" id="sidebar-container">
 			<!-- <div class="well"> -->
 				<div id="list-group-svg"></div>
 				<ul class="list-group">
@@ -30,33 +36,33 @@
 			<!-- <div class="well" id="canvas"></div> -->
 			<div id="canvas"></div>
 		</div>
-		<!-- <div class="col-md-4">
-			<div class="well" id="statistic" style="min-height:300px">
-				<p></p>
-			</div>
-		</div> -->
-	</div>
-	<div class="row">
-		<div class="col-md-6">
-			<!-- <div class="well" id="pivotTable" style="min-height:300px"></div> -->
-			<div id="pivotTable" style="min-height:300px"></div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-4">
-			<div class="well" id="statistic" style="min-height:300px">
-				<p></p>
-			</div>
-		</div>
 	</div>
 	<!-- <div class="row">
-		<div class="col-md-12">
+		<div class="col-md-6">
+			<div id="pivotTable" style="min-height:300px"></div>
+		</div>
+	</div> -->
+	<!-- <div class="row">
+		<div class="col-md-4">
 			<div class="well" id="statistic" style="min-height:300px">
 				<p></p>
 			</div>
 		</div>
 	</div> -->
 </div> <!-- /container -->
+
+<div class = "navbar navbar-default navbar-fixed-bottom">
+	<div class = "container">
+		<!-- <a class = "navbar-btn btn-info btn pull-rig">Wohooo</a> -->
+		<a class = "btn-info btn" id='collapse-navbar'><i class="glyphicon glyphicon-list"></i> Pivot Table</a>
+		<div id="pivotTable"></div>
+	</div>
+</div>
+
+<!-- <div id="slide-panel-bottom">
+	<a href="#" class="btn btn-info" id="opener-bottom"><i class="glyphicon glyphicon-signal">Bottom</i></a>
+			<p>BLAAAA</p>
+</div> -->
 
 <!-- <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script> -->
 

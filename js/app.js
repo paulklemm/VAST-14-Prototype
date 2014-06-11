@@ -22,6 +22,36 @@ function App(){
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
 	//this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
 	this.loadDataAsync(this.dataLoaded.bind(this));
+
+	// TODO VIS Hack This should go into the ui.js
+	$('#opener').on('click', function() {		
+		var panel = $('#slide-panel');
+		if (panel.hasClass("visible")) {
+			panel.removeClass('visible').animate({'margin-right':'-600px'});
+		} else {
+			panel.addClass('visible').animate({'margin-right':'0px'});
+		}	
+		return false;	
+	});
+	$('#collapse-navbar').on('click', function() {		
+		var panel = $('.navbar');
+		if (panel.hasClass("visible")) {
+			panel.removeClass('visible').animate({'height':'1%'});
+		} else {
+			panel.addClass('visible').animate({'height':'75%'});
+		}	
+		return false;	
+	});
+	// Click handler
+    jQuery('.animated-wrapper').on('click', function () {
+      
+        // State checker
+        if( jQuery(this).attr('data-state') === 'neutral' ) {
+            jQuery(this).attr('data-state', 'slide-right')
+        } else {
+            jQuery(this).attr('data-state', 'neutral')
+        }
+    });
 };
 
 App.prototype.createVariableForAllSubjects = function() {

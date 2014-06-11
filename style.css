@@ -1,3 +1,49 @@
+/* http://plnkr.co/edit/GGQLn519tPCrqjwHER4W?p=preview 
+https://stackoverflow.com/questions/19041801/bootstrap-3-0-sliding-menu-from-left
+*/
+
+/* Slide Panel
+-------------------------------------------------- */
+
+.navbar{
+	overflow:scroll;
+	height:1%;
+}
+
+#collapse-navbar {
+	float:right;
+}
+
+#slide-panel {
+    width:600px;
+    float: right;
+    height:600px;
+    padding:10px;
+    /*background:#eee;*/
+    margin-right:-600px;
+}
+#slide-panel-bottom {
+    width:600px;
+    float: right;
+    height:600px;
+    padding:10px;
+    /*background:#eee;*/
+    margin-right:-600px;
+}
+#opener-bottom {
+    float:bottom;
+    margin:0px 0px 0px 0px;
+    border-radius:0;
+}
+
+#opener {
+    float:left;
+    margin:-10px 0px 0px -120px;
+    border-radius:0;
+}
+/* / Slide Panel
+-------------------------------------------------- */
+
 #pivotTable .node {
 	border: solid 1px white;
 	font: 10px sans-serif;
@@ -20,6 +66,11 @@
 	overflow:auto;
 }
 
+#sidebar-container {
+	overflow:scroll;
+	max-height: 830px;
+}
+
 #canvas {
 /*	width: 100%; 
   height: 100%;*/
@@ -27,7 +78,7 @@
   overflow:scroll;
   /*position:absolute;*/
   /*min-height:1000px;*/
-  min-height:830px;
+  min-height:2000px;
   /*max-height:1000px;*/
 }
 
