@@ -4,8 +4,8 @@ function App(){
 	this._crossfilter = undefined;
 	this._groups = undefined;
 	this._visualizations = [];
-	// this._serverCommunication = new ServerCommunication('http://localhost:8081');
-	this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
+	this._serverCommunication = new ServerCommunication('http://localhost:8081');
+	// this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
 	this._masterRenderer = new MasterRenderer();
 	this._pivotTable = undefined;
 	this._statistics = new Statistics();
