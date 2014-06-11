@@ -108,7 +108,9 @@ ui.createContainer = function(e, id) {
 	// make it dragable and resizable
 	$('.viscontainer')
 	// TODO: FIX Scrolling Overflow: https://stackoverflow.com/questions/11122490/jquery-draggable-with-containment-parent-wont-scroll
-		.draggable( {containment: "parent", handle: "div.panel-heading", scroll: true} )
+		// .draggable( {containment: "parent", handle: "div.panel-heading", scroll: true} )
+		// TODO VIS
+		.draggable( {containment: "body", handle: "div.panel-heading", scroll: true} )
 		.resizable( {containment: "parent", 
 			resize: ui.resizing.resize} );
 
@@ -204,7 +206,7 @@ ui.dragging.handleDragEnd = function(e) {
 	// [].forEach.call(ui.dragging.cols, function (col) {
 	// 	col.classList.remove('over');
 	// });
-	document.querySelector('.well#canvas').classList.remove('over');
+	document.querySelector('#canvas').classList.remove('over');
 }
 
 
@@ -212,7 +214,7 @@ ui.dragging.attachDragLogic = function(){
 
 	// var attributes = document.querySelectorAll('li.attribute');
 	var attributes = document.querySelectorAll('.attribute');
-	var canvas = document.querySelector('.well#canvas');
+	var canvas = document.querySelector('div#canvas');
 	canvas.addEventListener('dragenter', ui.dragging.handleDragEnter, false);
 	canvas.addEventListener('dragover', ui.dragging.handleDragOver, false);
 	canvas.addEventListener('dragleave', ui.dragging.handleDragLeave, false);

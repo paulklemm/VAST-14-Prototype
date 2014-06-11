@@ -4,7 +4,8 @@ function App(){
 	this._crossfilter = undefined;
 	this._groups = undefined;
 	this._visualizations = [];
-	this._serverCommunication = new ServerCommunication('http://localhost:8081');
+	// this._serverCommunication = new ServerCommunication('http://localhost:8081');
+	this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
 	this._masterRenderer = new MasterRenderer();
 	this._pivotTable = undefined;
 	this._statistics = new Statistics();
@@ -98,7 +99,7 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 	myApp._statistics.updateCramerVMatrix(myApp._cramersVMatrix, myApp._data);
 	ui.hack.appendCramersResultToDiv(name);
 	// Append to Pivot Table
-	myApp._pivotTable.update([name]);
+	//myApp._pivotTable.update([name]);
 
 	// Now attach it to the side view
 	// Cluster Position

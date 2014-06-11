@@ -103,12 +103,11 @@ Barchart.prototype.create = function(){
 	// 	.text("Number of Subjects");
 	// x.domain(data.map(function(d) { return d.letter; }));
 	// y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-	x.domain(this._displayData.map(function(d) { console.log("DEBUG XDOMAIN d: " + d); return d.name; }));
+	x.domain(this._displayData.map(function(d) { return d.name; }));
 	y.domain([0, d3.max(this._displayData, function(d) { return d.frequency; })]);
 
 	svg.append("g")
 			.attr("class", "x axis")
-			.text("myAxisName")
 			.attr("transform", "translate(0," + height + ")")
 			.call(xAxis)
 		.append("text")
@@ -166,6 +165,7 @@ Barchart.prototype.create = function(){
 		var currentElement = data.data[i];
 		if (!elementList.hasOwnProperty(currentElement))
 			elementList[currentElement] = [];
+		 //if (myApp._data.SEX_SHIP2.data[i] == 2) TODO VIS Filter Gender
 		elementList[currentElement].push(myApp._data['zz_nr'].data[i]);
 	}
 	// console.log(foreignObject);
