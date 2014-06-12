@@ -168,7 +168,8 @@ Treeview.prototype.create = function (data) {
   else
   	dictionaryY = variableY.description.dictionary;
 
-  var color = d3.scale.category10();
+  // var color = d3.scale.category10();
+  var color = d3.scale.category20();
 
   var margin = {top: 0, right: 10, bottom: 10, left: 10},
 		width = $(this._containerId).width() - margin.left - margin.right,

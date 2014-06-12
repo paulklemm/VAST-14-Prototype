@@ -72,9 +72,9 @@ body { overflow-x: hidden; }
 }
 
 .over {
-	border: 3px dashed #000;
-	background-color: #E5E4E2;
-	color:red;
+	/*border: 3px dashed #000;*/
+	/*background-color: #E5E4E2;*/
+	/*color:red;*/
 }
 
 #list-group-svg {
@@ -102,7 +102,7 @@ body { overflow-x: hidden; }
 /*	width: 100%; 
   height: 100%;*/
   /*border: 1px solid black;*/
-  margin-left: 300px;
+  /*margin-left: 300px;*/
   overflow:scroll;
   /*position:absolute;*/
   /*min-height:1000px;*/

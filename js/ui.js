@@ -138,14 +138,17 @@ ui.hack.appendCramersResultToDiv = function(variable) {
 	// console.log(sortedCramerList);
 	var htmlString = "";
 
+	console.log("sortedCramerList");
+	console.log(sortedCramerList);
 	htmlString = htmlString + "<b>" + variable + "</b>";
 	htmlString = htmlString + "<ul>";
 	for (var i = 0; i < sortedCramerList.length; i++)
 		if (sortedCramerList[i].value > 0.1)
-			htmlString = htmlString + "<li>" + sortedCramerList[i].value + " - " + myApp._data[sortedCramerList[i].key].description.detail + " - " + sortedCramerList[i].key +  "</li>";
+			htmlString = htmlString + "<li key='" + sortedCramerList[i].key + "'' class='cramer-entry' draggable='true'>" + sortedCramerList[i].value + " - " + myApp._data[sortedCramerList[i].key].description.detail + " - " + sortedCramerList[i].key +  "</li>";
 	htmlString = htmlString + "</ul>";
 
 	$('#statistic p').prepend(htmlString);
+	ui.dragging.attachDragLogicCramerResult();
 }
 
 /* +++++++++++++++++++++++++++++++ */
@@ -173,7 +176,10 @@ ui.dragging.handleDragStart = function(e) {
 	//this.style.opacity = '0.4';  // this / e.target is the source node.
 
 	// Store ID of clicked element
-	ui.dragging.draggedElementID = this.__data__;
+	if (this.__data__ != undefined)
+		ui.dragging.draggedElementID = this.__data__;
+	else
+		ui.dragging.draggedElementID = this.getAttribute('key'); // From Correlation Sidebar
 }
 
 ui.dragging.handleDragOver = function(e) {
@@ -225,16 +231,23 @@ ui.dragging.attachDragLogicToVisContainer = function(id) {
 		detail.id = ui.dragging.draggedElementID;
 		detail.containerId = '#' + id;
 		myApp.createMatchingVisualization(detail);
-		// myApp.createMatchingVisualization(detail, ui.dragging.draggedElementID)
-		console.log("Dropped to viscontainer");
 	}, false);
+}
+
+ui.dragging.attachDragLogicCramerResult = function() {
+	var cramerEntries = document.querySelectorAll('.cramer-entry');
+	[].forEach.call(cramerEntries, function(col) {
+		col.addEventListener('dragstart', ui.dragging.handleDragStart, false);
+		col.addEventListener('dragend', ui.dragging.handleDragEnd, false);
+	});
 }
 
 ui.dragging.attachDragLogic = function(){
 
 	// var attributes = document.querySelectorAll('li.attribute');
 	var attributes = document.querySelectorAll('.attribute');
-	var canvas = document.querySelector('div#canvas');
+	// var canvas = document.querySelector('div#canvas');
+	var canvas = document.querySelector('body');
 	canvas.addEventListener('dragenter', ui.dragging.handleDragEnter, false);
 	canvas.addEventListener('dragover', ui.dragging.handleDragOver, false);
 	canvas.addEventListener('dragleave', ui.dragging.handleDragLeave, false);
