@@ -37,7 +37,7 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 		else // Set Color from differences to global mean
 			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList['globalMean']);
 		
-		var myRenderer = new Renderer(result.domId, result.mean);
+		var myRenderer = new Renderer(result.domId, result.mean, undefined, undefined, result.settings.vis);
 
 	// TODO: Calculate differences in Odds Ratios!
 	if(myApp._calculateOddsRatios)

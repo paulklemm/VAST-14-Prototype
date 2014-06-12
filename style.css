@@ -1,4 +1,4 @@
-/* http://plnkr.co/edit/GGQLn519tPCrqjwHER4W?p=preview 
+ http://plnkr.co/edit/GGQLn519tPCrqjwHER4W?p=preview 
 https://stackoverflow.com/questions/19041801/bootstrap-3-0-sliding-menu-from-left
 */
 
@@ -12,6 +12,9 @@ https://stackoverflow.com/questions/19041801/bootstrap-3-0-sliding-menu-from-lef
   position: absolute;
   text-indent: 2px;
 }
+
+/* Hack to remove side-Scrollbar*/
+body { overflow-x: hidden; }
 
 /* Slide Panel
 -------------------------------------------------- */
@@ -30,9 +33,13 @@ https://stackoverflow.com/questions/19041801/bootstrap-3-0-sliding-menu-from-lef
     float: right;
     height:600px;
     padding:10px;
+    right:11px;
+    z-index:100;
+    position:absolute;
     /*background:#eee;*/
     margin-right:-600px;
 }
+
 #slide-panel-bottom {
     width:600px;
     float: right;
@@ -78,9 +85,14 @@ https://stackoverflow.com/questions/19041801/bootstrap-3-0-sliding-menu-from-lef
 	overflow:auto;
 }
 
+.shadow {
+
+}
+
 #sidebar-container {
 	overflow:scroll;
 	max-height: 830px;
+	z-index:101;
 }
 
 #canvas {
@@ -162,4 +174,4 @@ svg {
 
 /*.x.axis path {
 	display: none;
-}*/
+}

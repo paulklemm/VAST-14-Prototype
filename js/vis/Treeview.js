@@ -94,11 +94,8 @@ Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels)
   else
     dataY = variableY.data;
 
-  console.log(dataX);
-  console.log(dataY);
 
   displayData = {name:"root", value: dataX.length, children: []};
-  console.log(displayData);
   var _helper = {};
 
 	for (var i = 0; i < dataX.length; i++) {
@@ -134,8 +131,6 @@ Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels)
 		}
 	}
 
-  console.log("HELPER");
-  console.log(_helper);
 
   // Create Data set as required from helper data set
   xkeys = Object.keys(_helper);
@@ -154,7 +149,6 @@ Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels)
 		}
   	displayData.children.push(newElement);
   }
-  console.log(displayData);
   return(displayData);
 }
 
@@ -188,8 +182,6 @@ Treeview.prototype.create = function (data) {
   var treemap = d3.layout.treemap()
     .size([width, height])
     .nodes(data)
-
-  console.log(treemap);
 
   var cells = canvas.selectAll(".cell")
     .data(treemap)
@@ -253,16 +245,10 @@ Treeview.prototype.create = function (data) {
 			var id_y = currentForeignObject.getAttribute('id_y');
 			if (id_x != null && id_y != null) {
 				var elementList = this.getElementList(parseInt(id_x), parseInt(id_y));
-				console.log(elementList);
 				// myApp._masterRenderer.calculateMean(elementList, this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]});
 				// Note: Name is needed for Clustering results, put the proper Names here
 				// var settings = {"name": this._variableX + "" + id_x + ">" +  id_y};
 				var settings = {"name": this._variableX + "-" + dictionaryX[id_x] + ">" + this._variableY + "-" + dictionaryY[id_y]};
-				console.log("======== Emitting calculate Mean Event with following Settings ========");
-				console.log("elementList");
-				console.log(elementList);
-				console.log("#canvas #" + foreignObject[0][i].id); 
-				console.log("=======================================================================");
 				myApp._masterRenderer.calculateMean(elementList, "#canvas #" + foreignObject[0][i].id, settings);
 			}
 		}

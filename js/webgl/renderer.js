@@ -1,9 +1,10 @@
 // Constructor
-function Renderer(containerId, geometry, width, height){
+function Renderer(containerId, geometry, width, height, vis){
 	this._containerId = containerId;
 	this._geometry = this.processOlderGeometry(geometry);
 	this._width = width;
 	this._height = height;
+	this._vis = vis;
 	this.init();
 }
 
@@ -58,13 +59,27 @@ Renderer.prototype.init = function(){
 	var renderer = new THREE.WebGLRenderer({ alpha: true });
 	renderer.setClearColor( 0x000000, 0 ); // Make it transparent
 	var width = undefined;
+	var size = 0;
+	if ($(this._containerId).height() > $(this._containerId).width())
+		size = $(this._containerId).width();
+	else
+		size = $(this._containerId).height();
+
+	// Override if it is for barcharts
+	if (this._vis == "barchart") {
+		size = $(this._containerId).width();
+	}
+
 	if (this._width == undefined)
-		width = $(this._containerId).width();
+		// width = $(this._containerId).width();
+		// width = $(this._containerId).height();
+		width = size;
 	else
 		width = this._width;
 	var height = undefined;
 	if (this._height == undefined)
-		height = $(this._containerId).width();
+		// height = $(this._containerId).height();
+		height = size;
 	else
 		height = this._height;
 	// var height = $(this._containerId).width();//%$(this._containerId).height();
@@ -77,6 +92,9 @@ Renderer.prototype.init = function(){
 	//var camera = new THREE.OrthographicCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 	// camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 )
 	// var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
+	camera.aspect = 1;
+	camera.updateProjectionMatrix();
+
 	camera.position.z = 250;
 	debugCamera = camera;
 

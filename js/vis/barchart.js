@@ -3,8 +3,6 @@ function Barchart(containerId, variable){
 	this._containerId = containerId;
 	this._variable = variable;
 	this._displayData = this.createDataset(true);
-	console.log("this._displayData");
-	console.log(this._displayData);
 	this.create();
 }
 
@@ -65,7 +63,6 @@ Barchart.prototype.create = function(){
 			// .ticks(2, "%")
 			// .tickFormat(function(d) { console.log(myApp._data[this._variable]); }.bind(this));
 			.tickFormat(function(d, i) {
-				console.log(i); 
 				if(myApp._data[this._variable].description.dataType == 'metric')
 					return myApp._data[this._variable].binnedData.dictionary[d];
 				else
@@ -170,12 +167,12 @@ Barchart.prototype.create = function(){
 	}
 	// console.log(foreignObject);
 	// console.log("foreignObject[0].length" + foreignObject[0].length);
-	console.log(elementList);
+	//console.log(elementList);
 	// if (foreignObject[0].length != 2)
 		for (var i = 0; i < foreignObject[0].length; i++) {
 			// console.log(data.dictionary[elementList[foreignObject[0][i].__data__.name]]);
 			myDebug = {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]};
-			myApp._masterRenderer.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]});
+			myApp._masterRenderer.calculateMean(elementList[foreignObject[0][i].__data__.name], this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name], "vis": "barchart"});
 
 		}
 	// else { // Calculate Mean Shapes
