@@ -11,21 +11,22 @@ MasterRenderer.prototype.calculateGlobalMean = function() {
 
 	myApp._serverCommunication.getMeanShapeAsync(elements, undefined, undefined, function(result) {
 		this._geometryList['globalMean'] = result.mean;
+		console.log("Calculating global mean done");
 	}.bind(this));
 }
 
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
-	console.log("elements");
-	console.log(elements);
+	// console.log("elements");
+	// console.log(elements);
 	myApp._serverCommunication.getClusteringAsync(elements, domId, settings, function(result) {
-		console.log("Printing Clustering Result");
-		console.log(result);
+		// console.log("Printing Clustering Result");
+		// console.log(result);
 		//myApp.addClusteringResultToDataset(result.clusters, result.emittedData.variables);
-		console.log("Clustering: Put Name " + result.emittedData.settings.name);
+		// console.log("Clustering: Put Name " + result.emittedData.settings.name);
 		myApp.addClusteringResultToDataset(result.clusters, result.emittedData.settings.name);
 	});
 
-	console.log("Calculating Mean for domId " + domId);
+	// console.log("Calculating Mean for domId " + domId);
 	myApp._serverCommunication.getMeanShapeAsync(elements, domId, settings, function(result) {
 		// Create Renderer
 		this._geometryList[result.domId] = result.mean;
@@ -46,6 +47,7 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 }
 
 MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometry2) {
+	if (geometry1 != undefined && geometry2 != undefined) {
 	// Create Color Scale
 	var colorScale = d3.scale.linear().domain([0,4]).range(["blue","red"]);
 	for (var i = 0; i < geometry1.faces.length; i++) { // Parse all Vertices
@@ -79,4 +81,5 @@ MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometr
 	result.geometry1 = geometry1
 	result.geometry2 = geometry2
 	return result;
+	}
 }

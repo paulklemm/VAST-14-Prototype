@@ -102,32 +102,36 @@ Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels)
   var _helper = {};
 
 	for (var i = 0; i < dataX.length; i++) {
-		if (_helper[dataX[i]] == undefined) {
-			_helper[dataX[i]] = {};
-			_helper[dataX[i]].value = 0;
-			// Variable X Children
-			if (variableX.description.dataType == 'metric')
-				_helper[dataX[i]].label = variableX.binnedData.dictionary[dataX[i]];
-			else
-				_helper[dataX[i]].label = variableX.description.dictionary[dataX[i]];
-			_helper[dataX[i]].name = dataX[i];
-
-			_helper[dataX[i]].children = {};
-		}
-
-		// Variable Y Children
-		if (_helper[dataX[i]].children[dataY[i]] == undefined) {
-			_helper[dataX[i]].children[dataY[i]] = {};
-			if (variableY.description.dataType == 'metric')
-					_helper[dataX[i]].children[dataY[i]].label = variableY.binnedData.dictionary[dataY[i]];
+		if (parseInt(dataX[i]) < 500 || !removeErroreVariables) {
+			if (_helper[dataX[i]] == undefined) {
+				_helper[dataX[i]] = {};
+				_helper[dataX[i]].value = 0;
+				// Variable X Children
+				if (variableX.description.dataType == 'metric')
+					_helper[dataX[i]].label = variableX.binnedData.dictionary[dataX[i]];
 				else
-					_helper[dataX[i]].children[dataY[i]].label = variableY.description.dictionary[dataY[i]];
-			
-			_helper[dataX[i]].children[dataY[i]].name = dataY[i];
-			_helper[dataX[i]].children[dataY[i]].value = 0;
+					_helper[dataX[i]].label = variableX.description.dictionary[dataX[i]];
+				_helper[dataX[i]].name = dataX[i];
+
+				_helper[dataX[i]].children = {};
+			}
+
+			// Variable Y Children
+			if (parseInt(dataY[i]) < 500 || !removeErroreVariables) {
+				if (_helper[dataX[i]].children[dataY[i]] == undefined) {
+					_helper[dataX[i]].children[dataY[i]] = {};
+					if (variableY.description.dataType == 'metric')
+							_helper[dataX[i]].children[dataY[i]].label = variableY.binnedData.dictionary[dataY[i]];
+						else
+							_helper[dataX[i]].children[dataY[i]].label = variableY.description.dictionary[dataY[i]];
+					
+					_helper[dataX[i]].children[dataY[i]].name = dataY[i];
+					_helper[dataX[i]].children[dataY[i]].value = 0;
+				}
+				_helper[dataX[i]].children[dataY[i]].value = _helper[dataX[i]].children[dataY[i]].value + 1;
+				_helper[dataX[i]].value = _helper[dataX[i]].value + 1;
+			}
 		}
-		_helper[dataX[i]].children[dataY[i]].value = _helper[dataX[i]].children[dataY[i]].value + 1;
-		_helper[dataX[i]].value = _helper[dataX[i]].value + 1;
 	}
 
   console.log("HELPER");
@@ -251,8 +255,13 @@ Treeview.prototype.create = function (data) {
 				console.log(elementList);
 				// myApp._masterRenderer.calculateMean(elementList, this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]});
 				// Note: Name is needed for Clustering results, put the proper Names here
-				var settings = {"name": this._variableX + ": " + id_x + ">" +  id_y};
-
+				// var settings = {"name": this._variableX + "" + id_x + ">" +  id_y};
+				var settings = {"name": this._variableX + "-" + dictionaryX[id_x] + ">" + this._variableY + "-" + dictionaryY[id_y]};
+				console.log("======== Emitting calculate Mean Event with following Settings ========");
+				console.log("elementList");
+				console.log(elementList);
+				console.log("#canvas #" + foreignObject[0][i].id); 
+				console.log("=======================================================================");
 				myApp._masterRenderer.calculateMean(elementList, "#canvas #" + foreignObject[0][i].id, settings);
 			}
 		}

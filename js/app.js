@@ -4,8 +4,8 @@ function App(){
 	this._crossfilter = undefined;
 	this._groups = undefined;
 	this._visualizations = [];
-	this._serverCommunication = new ServerCommunication('http://localhost:8081');
-	// this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
+	// this._serverCommunication = new ServerCommunication('http://localhost:8081');
+	this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
 	this._masterRenderer = new MasterRenderer();
 	this._pivotTable = undefined;
 	this._statistics = new Statistics();
@@ -190,6 +190,7 @@ App.prototype.dataLoaded = function(){
 	// this._pivotTable = new PivotTable('#pivotTable', this._data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
 	this._statistics.removeFaultyData(this._data);
+	console.log("Calculating global Mean ...");
 	this._masterRenderer.calculateGlobalMean();
 	console.log("Calculating bins ...");
 	this._statistics.createBinsForAllMetricVariables(this._data);
