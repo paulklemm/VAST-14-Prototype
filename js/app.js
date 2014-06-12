@@ -24,6 +24,8 @@ function App(){
 	this.loadDataAsync(this.dataLoaded.bind(this));
 
 	// TODO VIS Hack This should go into the ui.js
+	$('#sidebar-container').affix({
+	});
 	$('#opener').on('click', function() {		
 		var panel = $('#slide-panel');
 		if (panel.hasClass("visible")) {
