@@ -253,19 +253,24 @@ App.prototype.createMatchingVisualization = function(detail) {
 
 	// First, check if there is already a visualization registered with the container ID
 	var registeredVisualization = this.getRegisteredVisualization(detail.containerId);
+	// Update Visualizations
 	if (registeredVisualization != undefined) {
-		// Update Visualizations
-		this.removeRegisteredVisualization(registeredVisualization.containerId);
 		// Remove old Visualization
 		$(registeredVisualization.containerId +  ' svg').remove();
-		vis = new Treeview(detail.containerId, registeredVisualization.id, detail.id);
+		vis = new Treeview(detail.containerId, registeredVisualization.ids[0], detail.id);
+		myApp._pivotTable.update([detail.id]);
+		// Update registered Visualization Element
+		registeredVisualization.ids.push(detail.id);
 	}
-	else {
+	else { // Create new Visualization (barchart)
 		var type = this._data[detail.id].description.dataType;
 		if (type == 'dichotomous' || type == 'ordinal' || type == 'metric')
 			vis = new Barchart(detail.containerId, detail.id);
-		detail.visualization = vis;
-		myApp._visualizations.push(detail);
+
+		// Attach visualization element into the global container
+		var visualization = {"containerId": detail.containerId, "ids": [detail.id], "visualization": vis};
+		myApp._visualizations.push(visualization);
+		// update Pivot Table
 		myApp._pivotTable.update([detail.id]);
 	}
 }
