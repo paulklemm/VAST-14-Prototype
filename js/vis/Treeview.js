@@ -176,11 +176,12 @@ Treeview.prototype.create = function (data) {
 
   var color = d3.scale.category10();
 
-  var margin = {top: 40, right: 10, bottom: 10, left: 10},
-    width = 700 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+  var margin = {top: 0, right: 10, bottom: 10, left: 10},
+		width = $(this._containerId).width() - margin.left - margin.right,
+		height = $(this._containerId).height() - margin.top - margin.bottom;
 
-  var canvas = d3.select("#canvas").append("svg")
+  // var canvas = d3.select("#canvas").append("svg")
+  var canvas = d3.select(this._containerId).append("svg")
     .attr("width", width)
     .attr("height", height);
 

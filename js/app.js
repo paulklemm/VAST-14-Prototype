@@ -4,8 +4,8 @@ function App(){
 	this._crossfilter = undefined;
 	this._groups = undefined;
 	this._visualizations = [];
-	// this._serverCommunication = new ServerCommunication('http://localhost:8081');
-	this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
+	this._serverCommunication = new ServerCommunication('http://localhost:8081');
+	// this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
 	this._masterRenderer = new MasterRenderer();
 	this._pivotTable = undefined;
 	this._statistics = new Statistics();
@@ -250,18 +250,36 @@ App.prototype.loadDataAsync = function(callback) {
 }
 
 App.prototype.createMatchingVisualization = function(detail) {
-	var type = this._data[detail.id].description.dataType;
-	if (type == 'dichotomous' || type == 'ordinal' || type == 'metric')
-		vis = new Barchart(detail.containerId, detail.id);
-	detail.visualization = vis;
-	myApp._visualizations.push(detail);
-	myApp._pivotTable.update([detail.id]);
+
+	// First, check if there is already a visualization registered with the container ID
+	var registeredVisualization = this.getRegisteredVisualization(detail.containerId);
+	if (registeredVisualization != undefined) {
+		// Update Visualizations
+		this.removeRegisteredVisualization(registeredVisualization.containerId);
+		// Remove old Visualization
+		$(registeredVisualization.containerId +  ' svg').remove();
+		vis = new Treeview(detail.containerId, registeredVisualization.id, detail.id);
+	}
+	else {
+		var type = this._data[detail.id].description.dataType;
+		if (type == 'dichotomous' || type == 'ordinal' || type == 'metric')
+			vis = new Barchart(detail.containerId, detail.id);
+		detail.visualization = vis;
+		myApp._visualizations.push(detail);
+		myApp._pivotTable.update([detail.id]);
+	}
 }
 
 App.prototype.removeRegisteredVisualization = function(containerId) {
 		for (var i = 0; i < this._visualizations.length; i++)
 			if (containerId == this._visualizations[i]['containerId'])
 				this._visualizations.splice(i, 1);
+}
+
+App.prototype.getRegisteredVisualization = function(containerId) {
+		for (var i = 0; i < this._visualizations.length; i++)
+			if (containerId == this._visualizations[i]['containerId'])
+				return (this._visualizations[i]);
 }
 
 // Crossfilter Library needs it's data in a specific format

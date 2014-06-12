@@ -125,6 +125,8 @@ ui.createContainer = function(e, id) {
 	detail.id = id;
 	detail.containerId = '#' + containerId;
 	myApp.createMatchingVisualization(detail);
+	
+	ui.dragging.attachDragLogicToVisContainer(containerId);
 }
 
 /* +++++++++++++++++++++++++++++++ */
@@ -209,6 +211,24 @@ ui.dragging.handleDragEnd = function(e) {
 	document.querySelector('#canvas').classList.remove('over');
 }
 
+ui.dragging.attachDragLogicToVisContainer = function(id) {
+	var viscontainer = document.querySelector('div#canvas #' + id);
+	viscontainer.addEventListener('dragenter', ui.dragging.handleDragEnter, false);
+	viscontainer.addEventListener('dragover', ui.dragging.handleDragOver, false);
+	viscontainer.addEventListener('dragleave', ui.dragging.handleDragLeave, false);
+	// viscontainer.addEventListener('drop', ui.dragging.handleDrop, false);
+	viscontainer.addEventListener('drop', function(e){ 
+		if (e.stopPropagation) {
+			e.stopPropagation(); // stops the browser from redirecting.
+		}
+		var detail = {};
+		detail.id = ui.dragging.draggedElementID;
+		detail.containerId = '#' + id;
+		myApp.createMatchingVisualization(detail);
+		// myApp.createMatchingVisualization(detail, ui.dragging.draggedElementID)
+		console.log("Dropped to viscontainer");
+	}, false);
+}
 
 ui.dragging.attachDragLogic = function(){
 
