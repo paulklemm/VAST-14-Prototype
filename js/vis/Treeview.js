@@ -3,77 +3,9 @@
 function Treeview(containerId, variableX, variableY){
 	this._containerId = containerId;
 	this._variableX = variableX;
-  this._variableY = variableY;
+	this._variableY = variableY;
 	this._displayData = this.createDataset(true, false);
-  
-  var data2 = {
-    "name": "Max",
-    "value": 100,
-    "children": [
-    {
-      "name": "Sylvia",
-      "value": 75,
-      "children": [
-        {"name": "Craig", "value": 25},
-        {"name": "Robin", "value": 25},
-        {"name": "Anna", "value": 25}
-      ]
-    },
-    {
-      "name": "David",
-      "value": 75,
-      "children": [
-        {"name": "Jeff", "value": 25},
-        {"name": "Buffy", "value": 25}
-      ]
-    },
-    {
-      "name": "Mr. X",
-      "value": 12
-    }
-    ]
-  }
-  var data = {
-    "name": "Head",
-    "children": [{
-        "name": "cluster",
-        "title": "BlaParent",
-        "value": 3938,
-        "children": [{
-          "name": "Bla",
-          "title": "BLABLA",
-          "value": 3812,
-        },
-        {
-          "name": "dexter3",
-          "title": "BlaBla2",
-          "value": 6714
-        },
-        {
-          "name": "dexter3",
-          "title": "BlaBla3",
-          "value": 1714
-        }]
-    }, {
-        "name": "bla",
-        "title": "CommunityStructure",
-        "value": 3400,
-        "children": [{
-          "name": "chart2",
-          "title": "wohooo",
-          "value": 400
-        },
-        {
-          "name": "dexter2",
-          "title": "Wohooo2",
-          "value": 3000
-        }]
-    }]
-  };
-  this.create(this._displayData);
-  // d3.json("data/flare.json", function(data) {
-	 // this.create(data);
-  // }.bind(this));
+	this.create(this._displayData);
 }
 
 Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels){
@@ -204,7 +136,7 @@ Treeview.prototype.create = function (data) {
     .attr("text-anchor", "middle")
     .text(function(d) {return d.children ? null : dictionaryX[d.parent.name] + '>' + dictionaryY[d.name];})
 
-   foreignObject = cells.append("foreignObject")
+   var foreignObject = cells.append("foreignObject")
 		.attr("x", function(d) { return d.x; })
     .attr("y", function(d) { return d.y; })
     .attr("id", function(d, i) { return 'renderWindow_' + d.name + '_' + i;  })
@@ -213,32 +145,7 @@ Treeview.prototype.create = function (data) {
     .attr("width", function(d) { return d.dx; })
     .attr("height", function(d) { return d.dy; })
 
-  // Request Render Window
-	// var elementList = {};
-
-	// var variable = myApp._data[this._variable];
-	// var data;
-	// var dictionary;
-	// if (variable.description.dataType == 'metric') {
-	// 	data = variable.binnedData; // Use binned data for data!
-	// 	dictionary = variable.binnedData.dictionary;
-	// }
-	// else {
-	// 	data = variable;
-	// 	dictionary = variable.description.dictionary;
-	// }
-
-	// for (var i in data.data) {
-	// 	var currentElement = data.data[i];
-	// 	if (!elementList.hasOwnProperty(currentElement))
-	// 		elementList[currentElement] = [];
-	// 	 //if (myApp._data.SEX_SHIP2.data[i] == 2) TODO VIS Filter Gender
-	// 	elementList[currentElement].push(myApp._data['zz_nr'].data[i]);
-	// }
-	// // console.log(foreignObject);
-	// // console.log("foreignObject[0].length" + foreignObject[0].length);
-	
-	// // if (foreignObject[0].length != 2)
+    // Request Render window
 		for (var i = 0; i < foreignObject[0].length; i++) {
 			// console.log(data.dictionary[elementList[foreignObject[0][i].__data__.name]]);
 			var currentForeignObject = foreignObject[0][i];

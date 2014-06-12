@@ -4,6 +4,7 @@ function App(){
 	this._crossfilter = undefined;
 	this._groups = undefined;
 	this._visualizations = [];
+	this._heatmap = undefined;
 	this._serverCommunication = new ServerCommunication('http://localhost:8081');
 	// this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
 	this._masterRenderer = new MasterRenderer();
@@ -24,17 +25,31 @@ function App(){
 	this.loadDataAsync(this.dataLoaded.bind(this));
 
 	// TODO VIS Hack This should go into the ui.js
-	$('#sidebar-container').affix({
-	});
+	$('#sidebar-container').affix({});
 	$('#opener').on('click', function() {		
 		var panel = $('#slide-panel');
 		if (panel.hasClass("visible")) {
 			panel.removeClass('visible').animate({'margin-right':'-600px'});
+			// panel.addClass('hidden');
 		} else {
 			panel.addClass('visible').animate({'margin-right':'0px'});
+			// panel.removeClass('hidden');
 		}	
 		return false;	
 	});
+
+	$('#opener-heatmap').on('click', function() {		
+		var panel = $('#slide-panel-heatmap');
+		if (panel.hasClass("visible")) {
+			panel.removeClass('visible').animate({'margin-right':'-1000px'});
+			// panel.addClass('hidden');
+		} else {
+			panel.addClass('visible').animate({'margin-right':'0px'});
+			// panel.removeClass('hidden');
+		}	
+		return false;	
+	});
+
 	$('#collapse-navbar').on('click', function() {		
 		var panel = $('.navbar');
 		if (panel.hasClass("visible")) {
@@ -208,6 +223,21 @@ App.prototype.dataLoaded = function(){
 		// d3.json("data/cramersVMatrix.json", function(json) {
 		d3.json("data/cramersVMatrix_all.json", function(json) {
 			this._cramersVMatrix = json;
+			this._heatmap = new Heatmap('#heatmap-container');
+			// Remove Image Parameters from Cramers Matrix (they have poor binning
+			// and screw up the cramersV test)
+			// var keys = Object.keys(this._cramersVMatrix);
+			// var remove = {"Mean_Curvature": true, "Mean_Torsion": true, "Mean_Curvature_Coronal": true, "Mean_Curvature_Sagittal": true, "Mean_Curvature_Transverse": true, "Curvature_Angle": true, "Curvature_Angle_Sagittal": true, "Curvature_Angle_Coronal": true, "Curvature_Angle_Transverse": true}
+			// for (var i = 0; i < keys.length; i++) {
+			// 	if ( remove[keys[i]] == true)
+			// 		delete this._cramersVMatrix[keys[i]];
+			// 	else {
+			// 		var innerKeys = Object.keys(this._cramersVMatrix[keys[i]]);
+			// 		for (var j = 0; j < innerKeys.length; j++)
+			// 			if ( remove[innerKeys[j]] == true)
+			// 				delete this._cramersVMatrix[keys[i]][innerKeys[j]];
+			// 	}
+			// }
 		}.bind(this));
 	else
 		this._cramersVMatrix = this._statistics.getCramerVMatrix(this._data);
@@ -241,7 +271,8 @@ App.prototype.loadGroupDataAsync = function(callback) {
 
 App.prototype.loadDataAsync = function(callback) {
 	//var filePath = 'data/ship-data/data/shipdata/SHIP_2012_D_S2_20121129/SHIP_2012_D_S2_20121129.json';
-	var filePath = 'data/ship-data/data/shipdata/SHIP_2013_combined/SHIP_2013_combined_image.json';
+	var filePath = 'data/ship-data/data/shipdata/SHIP_2013_combined/SHIP_2013_combined_image_trim.json';
+	// var filePath = 'data/ship-data/data/shipdata/SHIP_2013_combined/SHIP_2013_combined.json';
 	var app = this; // Reference this objects, since it wont be available in the callback
 	d3.json(filePath, function(data){
 		app._data = data; // set data

@@ -1,6 +1,27 @@
+/*
  http://plnkr.co/edit/GGQLn519tPCrqjwHER4W?p=preview 
 https://stackoverflow.com/questions/19041801/bootstrap-3-0-sliding-menu-from-left
 */
+
+/* Heatmap
+-------------------------------------------------- */
+svg.heatmap {
+	font: 6px sans-serif;
+}
+
+.heatmap .background {
+	fill: #eee;
+}
+
+.heatmap line {
+	stroke: #fff;
+}
+
+.heatmap text.active {
+	/*z-index:-1;*/
+	font: 16px sans-serif;
+	fill: red;
+}
 
 /* Treeview
 -------------------------------------------------- */
@@ -28,6 +49,14 @@ body { overflow-x: hidden; }
 	float:right;
 }
 
+.hidden {
+	display: none;
+}
+
+.visible {
+	display: block;
+}
+
 #slide-panel {
     width:600px;
     float: right;
@@ -40,23 +69,29 @@ body { overflow-x: hidden; }
     margin-right:-600px;
 }
 
-#slide-panel-bottom {
-    width:600px;
+#slide-panel-heatmap {
+    width:1000px;
+    /*height:1000px;*/
     float: right;
-    height:600px;
+    /*height:600px;*/
     padding:10px;
+    right:11px;
+    z-index:100;
+    position:absolute;
     /*background:#eee;*/
-    margin-right:-600px;
+    margin-right:-1000px;
 }
-#opener-bottom {
-    float:bottom;
-    margin:0px 0px 0px 0px;
-    border-radius:0;
-}
+
 
 #opener {
     float:left;
-    margin:-10px 0px 0px -120px;
+    margin:-10px 0px 0px -118px;
+    border-radius:0;
+}
+
+#opener-heatmap {
+    float:left;
+    margin: 30px 0px 0px -96px;
     border-radius:0;
 }
 /* / Slide Panel
@@ -94,7 +129,7 @@ body { overflow-x: hidden; }
 	max-height: 830px;
 	z-index:101;
 	position: fixed;
-    /*top: 0px;*/
+  top: 50px;
     /*width: 100%;*/
 }
 
@@ -110,7 +145,7 @@ body { overflow-x: hidden; }
   /*max-height:1000px;*/
 }
 
-.well{
+.well#statistic{
 	/*max-height:1000px;*/
 	max-height:830px;
 	overflow-y: scroll;

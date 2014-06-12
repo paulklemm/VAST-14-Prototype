@@ -133,17 +133,18 @@ ui.createContainer = function(e, id) {
 // TODO: HACK VIS
 ui.hack.appendCramersResultToDiv = function(variable) {
 	//var cramersVRow = myApp._cramersVMatrix[variable];
+	// TODO: Maybe also ignore clustering results
+	var ignore = {"Mean_Curvature": true, "Mean_Torsion": true, "Mean_Curvature_Coronal": true, "Mean_Curvature_Sagittal": true, "Mean_Curvature_Transverse": true, "Curvature_Angle": true, "Curvature_Angle_Sagittal": true, "Curvature_Angle_Coronal": true, "Curvature_Angle_Transverse": true}
 	sortedCramerList = myApp._statistics.sortCramerVMatrix(myApp._cramersVMatrix, "descending", variable);
+
 	// console.log("sortedCramerList");
 	// console.log(sortedCramerList);
 	var htmlString = "";
 
-	console.log("sortedCramerList");
-	console.log(sortedCramerList);
 	htmlString = htmlString + "<b>" + variable + "</b>";
 	htmlString = htmlString + "<ul>";
 	for (var i = 0; i < sortedCramerList.length; i++)
-		if (sortedCramerList[i].value > 0.1)
+		if (sortedCramerList[i].value > 0.1 && !ignore[sortedCramerList[i].key])
 			htmlString = htmlString + "<li key='" + sortedCramerList[i].key + "'' class='cramer-entry' draggable='true'>" + sortedCramerList[i].value + " - " + myApp._data[sortedCramerList[i].key].description.detail + " - " + sortedCramerList[i].key +  "</li>";
 	htmlString = htmlString + "</ul>";
 
