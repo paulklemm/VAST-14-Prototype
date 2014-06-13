@@ -3,6 +3,11 @@ function MasterRenderer () {
 	this._target = new THREE.Vector3();
 	this._geometryList = {};
 	this._rendererList = {};
+	this._meshToRendererAssociation = {};
+	this._RendererToMeshAssociation = {};
+	this._currentReferenceMesh = undefined;
+	// Save Time on Mouse Down for renderer - used for click logic
+	this._mouseClickTime = 0;
 }
 
 MasterRenderer.prototype.calculateGlobalMean = function() {
@@ -12,8 +17,27 @@ MasterRenderer.prototype.calculateGlobalMean = function() {
 
 	myApp._serverCommunication.getMeanShapeAsync(elements, undefined, undefined, function(result) {
 		this._geometryList['globalMean'] = result.mean;
+		this._currentReferenceMesh = this._geometryList['globalMean'];
 		console.log("Calculating global mean done");
 	}.bind(this));
+}
+
+//myApp._masterRenderer.setNewReferenceMesh(myApp._masterRenderer._geometryList['#vis0 #renderWindow_0'])
+MasterRenderer.prototype.setNewReferenceMesh = function(mesh) {
+	if (mesh != undefined) {
+		this._currentReferenceMesh = mesh;
+		debug = false;
+		if (debug) console.log("Reference ID: " + mesh.id);
+		var material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+		var geometryKeys = Object.keys(this._geometryList);
+		for (var i = 0; i < geometryKeys.length; i++) {
+			if (geometryKeys[i] != 'globalMean') {
+				if (debug) console.log(geometryKeys[i] + " ID: " + this._geometryList[geometryKeys[i]].id);
+				this.setDifferenceVertexColors(this._geometryList[geometryKeys[i]], mesh);
+				this._rendererList[ this._meshToRendererAssociation[geometryKeys[i]] ].replaceGeometry(this._geometryList[geometryKeys[i]]);
+			}
+		}
+	}
 }
 
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
@@ -36,11 +60,13 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 		if (result.settings != undefined && result.settings.calculateMean != undefined)
 			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList[result.settings.calculateMean]);
 		else // Set Color from differences to global mean
-			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList['globalMean']);
+			this.setDifferenceVertexColors(this._geometryList[result.domId], this._currentReferenceMesh);
 		
 		var myRenderer = new Renderer(result.domId, result.mean, undefined, undefined, result.settings.vis, 'renderer_' + Object.keys(this._rendererList).length);
 		// Add it to Renderer List
 		this._rendererList[myRenderer._renderer.domElement.getAttribute('id')] = myRenderer;
+		this._RendererToMeshAssociation[myRenderer._renderer.domElement.getAttribute('id')] = result.domId;
+		this._meshToRendererAssociation[result.domId] = myRenderer._renderer.domElement.getAttribute('id');
 
 	// TODO: Calculate differences in Odds Ratios!
 	if(myApp._calculateOddsRatios)
@@ -62,19 +88,19 @@ MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometr
 		differenceA = differenceA + Math.abs(geometry1.vertices[geometry1.faces[i].a].y - geometry2.vertices[geometry2.faces[i].a].y);
 		differenceA = differenceA + Math.abs(geometry1.vertices[geometry1.faces[i].a].z - geometry2.vertices[geometry2.faces[i].a].z);
 		geometry1.faces[i].vertexColors[0] = new THREE.Color(colorScale(differenceA / 3));
-		geometry2.faces[i].vertexColors[0] = new THREE.Color(colorScale(differenceA / 3));
+		// geometry2.faces[i].vertexColors[0] = new THREE.Color(colorScale(differenceA / 3));
 
 		differenceB = differenceB + Math.abs(geometry1.vertices[geometry1.faces[i].b].x - geometry2.vertices[geometry2.faces[i].b].x);
 		differenceB = differenceB + Math.abs(geometry1.vertices[geometry1.faces[i].b].y - geometry2.vertices[geometry2.faces[i].b].y);
 		differenceB = differenceB + Math.abs(geometry1.vertices[geometry1.faces[i].b].z - geometry2.vertices[geometry2.faces[i].b].z);
 		geometry1.faces[i].vertexColors[1] = new THREE.Color(colorScale(differenceB / 3));
-		geometry2.faces[i].vertexColors[1] = new THREE.Color(colorScale(differenceB / 3));
+		// geometry2.faces[i].vertexColors[1] = new THREE.Color(colorScale(differenceB / 3));
 
 		differenceC = differenceC + Math.abs(geometry1.vertices[geometry1.faces[i].c].x - geometry2.vertices[geometry2.faces[i].c].x);
 		differenceC = differenceC + Math.abs(geometry1.vertices[geometry1.faces[i].c].y - geometry2.vertices[geometry2.faces[i].c].y);
 		differenceC = differenceC + Math.abs(geometry1.vertices[geometry1.faces[i].c].z - geometry2.vertices[geometry2.faces[i].c].z);
 		geometry1.faces[i].vertexColors[2] = new THREE.Color(colorScale(differenceC / 3));
-		geometry2.faces[i].vertexColors[2] = new THREE.Color(colorScale(differenceC / 3));
+		// geometry2.faces[i].vertexColors[2] = new THREE.Color(colorScale(differenceC / 3));
 	}
 
 	geometry1.colorsNeedUpdate = true;

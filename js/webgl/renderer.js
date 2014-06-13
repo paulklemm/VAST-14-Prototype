@@ -7,7 +7,24 @@ function Renderer(containerId, geometry, width, height, vis, name){
 	this._vis = vis;
 	this._name = name;
 	this._enlarged = false;
+	this._scene = undefined;
 	this.init();
+}
+
+Renderer.prototype.removeMesh = function() { 
+	this._scene.remove(this._scene.getObjectByName('meanmesh'));
+}
+
+Renderer.prototype.replaceGeometry = function(geometry) {
+	this.removeMesh();
+	this._geometry = this.processOlderGeometry(geometry);
+	var material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+
+	var mesh = new THREE.Mesh(this._geometry, material);
+	mesh.rotation.set( 90, 0, - Math.PI / 2);
+	mesh.name = "meanmesh";
+	debugMeshList.push(mesh);
+	this._scene.add( mesh );
 }
 
 Renderer.prototype.processOlderGeometry = function(geometry) {
@@ -130,7 +147,7 @@ Renderer.prototype.init = function(){
 	// directionalLight.position.set(1, 1, 1).normalize();
 	// scene.add(directionalLight);
 
-	var loader = new THREE.STLLoader();
+	// var loader = new THREE.STLLoader();
 	// var material = new THREE.MeshPhongMaterial( { ambient: 0xff5533, color: 0xff5533, specular: 0x111111, shininess: 200 } );
 	var material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
 	// var materials = [
@@ -140,6 +157,7 @@ Renderer.prototype.init = function(){
 	// console.log(geometry);
 	var mesh = new THREE.Mesh(this._geometry, material);
 	mesh.rotation.set( 90, 0, - Math.PI / 2);
+	mesh.name = "meanmesh";
 	debugMeshList.push(mesh);
 	scene.add( mesh );
 	// // mesh.scale.set( 3, 3, 1 );
@@ -182,34 +200,43 @@ Renderer.prototype.init = function(){
 	}
 	animate();
 	$(this._containerId).append(renderer.domElement);
-	// TODO DEBUG
 	myRenderer = renderer;
 	this._renderer = renderer;
 	this._renderer.domElement.setAttribute('id', this._name);
 	this._width = parseInt(this._renderer.domElement.getAttribute('width'));
 	this._height = parseInt(this._renderer.domElement.getAttribute('height'));
+	this._scene = scene;
 	this.appendMouseEvents(this._renderer);
 }
 
 Renderer.prototype.appendMouseEvents = function(renderer) {
+	
+	renderer.domElement.addEventListener('dblclick', function(e) { 
+		console.log(e);
+		console.log("Double Click!");
+	});
+
+	renderer.domElement.addEventListener('mousedown', function(e) { 
+		myApp._masterRenderer._mouseDownTime = new Date().getTime();
+	});
+
 	renderer.domElement.addEventListener('mouseup', function(e) {
-		var rendererName = e.toElement.getAttribute('id');
-		var _renderer = myApp._masterRenderer._rendererList[rendererName];
-		var width = _renderer._width;
-		var height = _renderer._height;
-		if (_renderer._enlarged) {
-			_renderer._renderer.setSize(width,height);
-			_renderer._enlarged = false;
+		// Check if it was a click or a camera movement depending on the time passed
+		// between mousedown and mouseup event
+		var currentTime = new Date().getTime();
+		if (currentTime - myApp._masterRenderer._mouseDownTime < 400) {
+			var rendererName = e.toElement.getAttribute('id');
+			var _renderer = myApp._masterRenderer._rendererList[rendererName];
+			var width = _renderer._width;
+			var height = _renderer._height;
+			if (_renderer._enlarged) {
+				_renderer._renderer.setSize(width,height);
+				_renderer._enlarged = false;
+			}
+			else {
+				_renderer._renderer.setSize(300,300);
+				_renderer._enlarged = true;
+			}
 		}
-		else {
-			_renderer._renderer.setSize(300,300);
-			_renderer._enlarged = true;
-		}
-	})
-	// renderer.domElement.addEventListener('mouseleave', function(e) {
-	// 	var rendererName = e.fromElement.getAttribute('id');
-	// 	var width = myApp._masterRenderer._rendererList[rendererName]._width;
-	// 	var height = myApp._masterRenderer._rendererList[rendererName]._height;
-	// 	myApp._masterRenderer._rendererList[rendererName]._renderer.setSize(width,height);
-	// })
+	});
 }

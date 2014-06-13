@@ -147,20 +147,20 @@ Treeview.prototype.create = function (data) {
     .attr("height", function(d) { return d.dy; })
 
     // Request Render window
-		for (var i = 0; i < foreignObject[0].length; i++) {
-			// console.log(data.dictionary[elementList[foreignObject[0][i].__data__.name]]);
-			var currentForeignObject = foreignObject[0][i];
-			var id_x = currentForeignObject.getAttribute('id_x');
-			var id_y = currentForeignObject.getAttribute('id_y');
-			if (id_x != null && id_y != null) {
-				var elementList = this.getElementList(parseInt(id_x), parseInt(id_y));
-				// myApp._masterRenderer.calculateMean(elementList, this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]});
-				// Note: Name is needed for Clustering results, put the proper Names here
-				// var settings = {"name": this._variableX + "" + id_x + ">" +  id_y};
-				var settings = {"name": this._variableX + "-" + dictionaryX[id_x] + ">" + this._variableY + "-" + dictionaryY[id_y]};
-				myApp._masterRenderer.calculateMean(elementList, "#canvas #" + foreignObject[0][i].id, settings);
-			}
+	for (var i = 0; i < foreignObject[0].length; i++) {
+		// console.log(data.dictionary[elementList[foreignObject[0][i].__data__.name]]);
+		var currentForeignObject = foreignObject[0][i];
+		var id_x = currentForeignObject.getAttribute('id_x');
+		var id_y = currentForeignObject.getAttribute('id_y');
+		if (id_x != null && id_y != null) {
+			var elementList = this.getElementList(parseInt(id_x), parseInt(id_y));
+			// myApp._masterRenderer.calculateMean(elementList, this._containerId + " #" + foreignObject[0][i].id, {"name": variable.name + ": " + dictionary[foreignObject[0][i].__data__.name]});
+			// Note: Name is needed for Clustering results, put the proper Names here
+			// var settings = {"name": this._variableX + "" + id_x + ">" +  id_y};
+			var settings = {"name": this._variableX + "-" + dictionaryX[id_x] + ">" + this._variableY + "-" + dictionaryY[id_y]};
+			myApp._masterRenderer.calculateMean(elementList, this._containerId + " #" + foreignObject[0][i].id, settings);
 		}
+	}
 }
 
 Treeview.prototype.getElementList = function(x, y) {
