@@ -2,6 +2,7 @@ function MasterRenderer () {
 	this._camera = new THREE.PerspectiveCamera( 45, 1, 1, 1000 );
 	this._target = new THREE.Vector3();
 	this._geometryList = {};
+	this._rendererList = {};
 }
 
 MasterRenderer.prototype.calculateGlobalMean = function() {
@@ -37,7 +38,9 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 		else // Set Color from differences to global mean
 			this.setDifferenceVertexColors(this._geometryList[result.domId], this._geometryList['globalMean']);
 		
-		var myRenderer = new Renderer(result.domId, result.mean, undefined, undefined, result.settings.vis);
+		var myRenderer = new Renderer(result.domId, result.mean, undefined, undefined, result.settings.vis, 'renderer_' + Object.keys(this._rendererList).length);
+		// Add it to Renderer List
+		this._rendererList[myRenderer._renderer.domElement.getAttribute('id')] = myRenderer;
 
 	// TODO: Calculate differences in Odds Ratios!
 	if(myApp._calculateOddsRatios)

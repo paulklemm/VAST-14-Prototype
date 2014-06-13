@@ -143,6 +143,7 @@ Treeview.prototype.create = function (data) {
     .attr("id_x", function(d, i) { return d.children ? null : d.parent.name; } )
     .attr("id_y", function(d, i) { return d.children ? null : d.name; } )
     .attr("width", function(d) { return d.dx; })
+    // .on('mouseover', function(e) { console.log("Mouse Over"); console.log(e); })
     .attr("height", function(d) { return d.dy; })
 
     // Request Render window

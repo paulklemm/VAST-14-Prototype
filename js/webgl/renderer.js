@@ -1,10 +1,12 @@
 // Constructor
-function Renderer(containerId, geometry, width, height, vis){
+function Renderer(containerId, geometry, width, height, vis, name){
 	this._containerId = containerId;
 	this._geometry = this.processOlderGeometry(geometry);
 	this._width = width;
 	this._height = height;
 	this._vis = vis;
+	this._name = name;
+	this._enlarged = false;
 	this.init();
 }
 
@@ -180,4 +182,34 @@ Renderer.prototype.init = function(){
 	}
 	animate();
 	$(this._containerId).append(renderer.domElement);
+	// TODO DEBUG
+	myRenderer = renderer;
+	this._renderer = renderer;
+	this._renderer.domElement.setAttribute('id', this._name);
+	this._width = parseInt(this._renderer.domElement.getAttribute('width'));
+	this._height = parseInt(this._renderer.domElement.getAttribute('height'));
+	this.appendMouseEvents(this._renderer);
+}
+
+Renderer.prototype.appendMouseEvents = function(renderer) {
+	renderer.domElement.addEventListener('mouseup', function(e) {
+		var rendererName = e.toElement.getAttribute('id');
+		var _renderer = myApp._masterRenderer._rendererList[rendererName];
+		var width = _renderer._width;
+		var height = _renderer._height;
+		if (_renderer._enlarged) {
+			_renderer._renderer.setSize(width,height);
+			_renderer._enlarged = false;
+		}
+		else {
+			_renderer._renderer.setSize(300,300);
+			_renderer._enlarged = true;
+		}
+	})
+	// renderer.domElement.addEventListener('mouseleave', function(e) {
+	// 	var rendererName = e.fromElement.getAttribute('id');
+	// 	var width = myApp._masterRenderer._rendererList[rendererName]._width;
+	// 	var height = myApp._masterRenderer._rendererList[rendererName]._height;
+	// 	myApp._masterRenderer._rendererList[rendererName]._renderer.setSize(width,height);
+	// })
 }

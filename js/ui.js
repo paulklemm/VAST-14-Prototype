@@ -144,8 +144,8 @@ ui.hack.appendCramersResultToDiv = function(variable) {
 	htmlString = htmlString + "<b>" + variable + "</b>";
 	htmlString = htmlString + "<ul>";
 	for (var i = 0; i < sortedCramerList.length; i++)
-		if (sortedCramerList[i].value > 0.1 && !ignore[sortedCramerList[i].key])
-			htmlString = htmlString + "<li key='" + sortedCramerList[i].key + "'' class='cramer-entry' draggable='true'>" + sortedCramerList[i].value + " - " + myApp._data[sortedCramerList[i].key].description.detail + " - " + sortedCramerList[i].key +  "</li>";
+		if (sortedCramerList[i].value > 0.1 && !ignore[sortedCramerList[i].key] && myApp._data[sortedCramerList[i].key].description.detail.indexOf("Clustering Result of") == -1)
+			htmlString = htmlString + "<li key='" + sortedCramerList[i].key + "'' class='cramer-entry' draggable='true'>" + (Math.round(sortedCramerList[i].value * 100) / 100) + " - " + myApp._data[sortedCramerList[i].key].description.detail + " - " + sortedCramerList[i].key +  "</li>";
 	htmlString = htmlString + "</ul>";
 
 	$('#statistic p').prepend(htmlString);
