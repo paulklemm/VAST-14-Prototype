@@ -83,6 +83,41 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometry2) {
 	if (geometry1 != undefined && geometry2 != undefined) {
 	// Create Color Scale
+	var scale = d3.scale.linear().domain([0,4]).range([0,255]);
+	for (var i = 0; i < geometry1.faces.length; i++) { // Parse all Vertices
+		var differenceAx = 0; var differenceAy = 0; var differenceAz = 0;
+		var differenceBx = 0; var differenceBy = 0; var differenceBz = 0;
+		var differenceCx = 0; var differenceCy = 0; var differenceCz = 0;
+
+		differenceAx = differenceAx + Math.abs(geometry1.vertices[geometry1.faces[i].a].x - geometry2.vertices[geometry2.faces[i].a].x);
+		differenceAy = differenceAy + Math.abs(geometry1.vertices[geometry1.faces[i].a].y - geometry2.vertices[geometry2.faces[i].a].y);
+		differenceAz = differenceAz + Math.abs(geometry1.vertices[geometry1.faces[i].a].z - geometry2.vertices[geometry2.faces[i].a].z);
+		geometry1.faces[i].vertexColors[0] = new THREE.Color("rgb(" + Math.round(scale(differenceAx)) + "," + Math.round(scale(differenceAy)) + "," + Math.round(scale(differenceAz)) + ")");
+
+		differenceBx = differenceBx + Math.abs(geometry1.vertices[geometry1.faces[i].b].x - geometry2.vertices[geometry2.faces[i].b].x);
+		differenceBy = differenceBy + Math.abs(geometry1.vertices[geometry1.faces[i].b].y - geometry2.vertices[geometry2.faces[i].b].y);
+		differenceBz = differenceBz + Math.abs(geometry1.vertices[geometry1.faces[i].b].z - geometry2.vertices[geometry2.faces[i].b].z);
+		geometry1.faces[i].vertexColors[1] = new THREE.Color("rgb(" + Math.round(scale(differenceBx)) + "," + Math.round(scale(differenceBy)) + "," + Math.round(scale(differenceBz)) + ")");
+
+		differenceCx = differenceCx + Math.abs(geometry1.vertices[geometry1.faces[i].c].x - geometry2.vertices[geometry2.faces[i].c].x);
+		differenceCy = differenceCy + Math.abs(geometry1.vertices[geometry1.faces[i].c].y - geometry2.vertices[geometry2.faces[i].c].y);
+		differenceCz = differenceCz + Math.abs(geometry1.vertices[geometry1.faces[i].c].z - geometry2.vertices[geometry2.faces[i].c].z);
+		geometry1.faces[i].vertexColors[2] = new THREE.Color("rgb(" + Math.round(scale(differenceCx)) + "," + Math.round(scale(differenceCy)) + "," + Math.round(scale(differenceCz)) + ")");
+	}
+
+	geometry1.colorsNeedUpdate = true;
+	geometry2.colorsNeedUpdate = true;
+
+	var result = {};
+	result.geometry1 = geometry1
+	result.geometry2 = geometry2
+	return result;
+	}
+}
+
+MasterRenderer.prototype.setDifferenceVertexColors_allDirections = function(geometry1, geometry2) {
+	if (geometry1 != undefined && geometry2 != undefined) {
+	// Create Color Scale
 	var colorScale = d3.scale.linear().domain([0,4]).range(["blue","red"]);
 	for (var i = 0; i < geometry1.faces.length; i++) { // Parse all Vertices
 		var differenceA = 0;
