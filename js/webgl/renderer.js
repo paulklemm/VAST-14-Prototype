@@ -8,6 +8,7 @@ function Renderer(containerId, geometry, width, height, vis, name){
 	this._name = name;
 	this._enlarged = false;
 	this._scene = undefined;
+	this._controls = undefined;
 	this.init();
 }
 
@@ -25,6 +26,7 @@ Renderer.prototype.replaceGeometry = function(geometry) {
 	mesh.name = "meanmesh";
 	debugMeshList.push(mesh);
 	this._scene.add( mesh );
+	this.render();
 }
 
 Renderer.prototype.processOlderGeometry = function(geometry) {
@@ -132,6 +134,8 @@ Renderer.prototype.init = function(){
 
 	controls.keys = [ 65, 83, 68 ];
 
+	this.render = render;
+
 	controls.addEventListener( 'change', render );
 
 	var scene = new THREE.Scene();
@@ -206,14 +210,17 @@ Renderer.prototype.init = function(){
 	this._width = parseInt(this._renderer.domElement.getAttribute('width'));
 	this._height = parseInt(this._renderer.domElement.getAttribute('height'));
 	this._scene = scene;
+	this._controls = controls;
 	this.appendMouseEvents(this._renderer);
 }
 
 Renderer.prototype.appendMouseEvents = function(renderer) {
 	
 	renderer.domElement.addEventListener('dblclick', function(e) { 
-		console.log(e);
-		console.log("Double Click!");
+		var rendererName = e.toElement.getAttribute('id');
+		var thisMeshName = myApp._masterRenderer._RendererToMeshAssociation[rendererName];
+		var thisMesh = myApp._masterRenderer._geometryList[thisMeshName];
+		myApp._masterRenderer.setNewReferenceMesh(thisMesh);
 	});
 
 	renderer.domElement.addEventListener('mousedown', function(e) { 
@@ -237,6 +244,7 @@ Renderer.prototype.appendMouseEvents = function(renderer) {
 				_renderer._renderer.setSize(300,300);
 				_renderer._enlarged = true;
 			}
+			_renderer.render();
 		}
 	});
 }
