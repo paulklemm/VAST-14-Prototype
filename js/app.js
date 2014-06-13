@@ -22,6 +22,7 @@ function App(){
 	// will refer to the object, not the window element
 	// See https://stackoverflow.com/questions/13996794/javascript-prototype-this-issue
 	//this.loadDataAsync(this.constructCrossfilterDataset.bind(this));
+	// ui.createColorWheel('body');
 	this.loadDataAsync(this.dataLoaded.bind(this));
 
 	// TODO VIS Hack This should go into the ui.js
@@ -60,15 +61,15 @@ function App(){
 		return false;	
 	});
 	// Click handler
-    jQuery('.animated-wrapper').on('click', function () {
-      
-        // State checker
-        if( jQuery(this).attr('data-state') === 'neutral' ) {
-            jQuery(this).attr('data-state', 'slide-right')
-        } else {
-            jQuery(this).attr('data-state', 'neutral')
-        }
-    });
+  jQuery('.animated-wrapper').on('click', function () {
+    
+      // State checker
+      if( jQuery(this).attr('data-state') === 'neutral' ) {
+          jQuery(this).attr('data-state', 'slide-right')
+      } else {
+          jQuery(this).attr('data-state', 'neutral')
+      }
+  });
 };
 
 App.prototype.createVariableForAllSubjects = function() {
@@ -246,6 +247,8 @@ App.prototype.dataLoaded = function(){
 	this._zz_nrHash = {};
 	for (var i = 0; i < this._data.zz_nr.data.length; i++)
 		this._zz_nrHash[this._data.zz_nr.data[i]] = i;
+
+	ui.appendUIEvents();
 }
 
 App.prototype.loadGroupDataAsync = function(callback) {

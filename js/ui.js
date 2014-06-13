@@ -3,6 +3,30 @@ var ui = {};
 ui.dragging = {};
 ui.resizing = {};
 ui.hack = {};
+
+ui.createColorWheel = function(container) {
+	var arc, data, padding, steps, r=80/2, pi = Math.PI;
+	padding = 2 * r / 100;
+	arc = d3.svg.arc().innerRadius(r-40).outerRadius(r).startAngle(function(d) {
+	  return d.startAngle;
+	}).endAngle(function(d) {
+	  return d.endAngle;
+	});
+	steps = 2;
+	data = d3.range(180).map(function(d, i) {
+	  i *= steps;
+	  return {
+	    startAngle: i * (pi / 180),
+	    endAngle: (i + 2) * (pi / 180),
+	    fill: d3.hsl(i, 1, .5).toString()
+	  };
+	});
+	d3.select(container).insert('svg', 'svg').attr("id", "icon").append('g').attr("transform", "translate(" + r + "," + r + ") rotate(90) scale(-1,1)").selectAll('path').data(data).enter().append('path').attr("d", arc).attr("stroke-width", 1).attr("stroke", function(d) {
+	  return d.fill;
+	}).attr("fill", function(d) {
+	  return d.fill;
+	});
+}
 // https://stackoverflow.com/questions/18660269/collapsible-responsive-sidebar-menu-with-jquery-and-bootstrap-3
 // https://stackoverflow.com/questions/15391325/how-to-collapse-expand-list-using-bootstrap-jquery
 ui.createSidebar = function() {
@@ -150,6 +174,16 @@ ui.hack.appendCramersResultToDiv = function(variable) {
 
 	$('#statistic p').prepend(htmlString);
 	ui.dragging.attachDragLogicCramerResult();
+}
+
+ui.appendUIEvents = function(){
+	$('#ex1').slider().on('slide', function(ev){
+		// formater: function(value) {
+		// 	console.log('Current value: ' + value);
+			myApp._masterRenderer._maxSimilarity = ev.value;
+			myApp._masterRenderer.renderAll();
+		// }
+	});
 }
 
 /* +++++++++++++++++++++++++++++++ */

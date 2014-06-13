@@ -6,6 +6,7 @@ function MasterRenderer () {
 	this._meshToRendererAssociation = {};
 	this._RendererToMeshAssociation = {};
 	this._currentReferenceMesh = undefined;
+	this._maxSimilarity = 4;
 	// Save Time on Mouse Down for renderer - used for click logic
 	this._mouseDownTime = 0;
 }
@@ -30,21 +31,24 @@ MasterRenderer.prototype.setNewReferenceMesh = function(mesh) {
 			this._currentReferenceMesh = this._geometryList['globalMean'];
 		else
 			this._currentReferenceMesh = mesh;
-
-		debug = false;
-		if (debug) console.log("Reference ID: " + mesh.id);
-		var material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
-		var geometryKeys = Object.keys(this._geometryList);
-		for (var i = 0; i < geometryKeys.length; i++) {
-			if (geometryKeys[i] != 'globalMean') {
-				if (debug) console.log(geometryKeys[i] + " ID: " + this._geometryList[geometryKeys[i]].id);
-				this.setDifferenceVertexColors(this._geometryList[geometryKeys[i]], this._currentReferenceMesh);
-				this._rendererList[ this._meshToRendererAssociation[geometryKeys[i]] ].replaceGeometry(this._geometryList[geometryKeys[i]]);
-			}
-		}
+		this.renderAll();
 	}
 }
 
+MasterRenderer.prototype.renderAll = function() {
+	debug = false;
+	if (debug) console.log("Reference ID: " + mesh.id);
+	var material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+	var geometryKeys = Object.keys(this._geometryList);
+	for (var i = 0; i < geometryKeys.length; i++) {
+		if (geometryKeys[i] != 'globalMean') {
+			if (debug) console.log(geometryKeys[i] + " ID: " + this._geometryList[geometryKeys[i]].id);
+			this.setDifferenceVertexColors(this._geometryList[geometryKeys[i]], this._currentReferenceMesh);
+			this._rendererList[ this._meshToRendererAssociation[geometryKeys[i]] ].replaceGeometry(this._geometryList[geometryKeys[i]]);
+		}
+	}
+}
+ 
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 	// console.log("elements");
 	// console.log(elements);
@@ -83,7 +87,7 @@ MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 MasterRenderer.prototype.setDifferenceVertexColors = function(geometry1, geometry2) {
 	if (geometry1 != undefined && geometry2 != undefined) {
 	// Create Color Scale
-	var scale = d3.scale.linear().domain([0,4]).range([0,255]);
+	var scale = d3.scale.linear().domain([0,this._maxSimilarity]).range([0,255]);
 	for (var i = 0; i < geometry1.faces.length; i++) { // Parse all Vertices
 		var differenceAx = 0; var differenceAy = 0; var differenceAz = 0;
 		var differenceBx = 0; var differenceBy = 0; var differenceBz = 0;

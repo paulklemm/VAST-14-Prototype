@@ -3,6 +3,7 @@
 <link href="bower_components/jquery-ui/themes/base/jquery-ui.css" rel="stylesheet">
 <!-- <link href="js/pivottable/examples/pivot.css" rel="stylesheet"> -->
 <link href="js/pivottable/examples/pivot.css" rel="stylesheet">
+<link href="bower_components/bootstrap-slider/slider.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
 <head>
 	<meta charset='utf-8'>
@@ -46,6 +47,8 @@
 
 <div class = "navbar navbar-default navbar-fixed-bottom">
 	<div class = "container">
+	Similarity: <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0.5" data-slider-max="5" data-slider-step="0.5" data-slider-handle="square" data-slider-value="4"/>
+
 		<a class = "btn-info btn" id='collapse-navbar'><i class="glyphicon glyphicon-list"></i> Pivot Table</a>
 		<div id="pivotTable"></div>
 	</div>
@@ -55,6 +58,7 @@
 <script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
 <script src="bower_components/d3/d3.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="bower_components/bootstrap-slider/bootstrap-slider.js"></script>
 <script src="bower_components/crossfilter/crossfilter.js"></script>
 <script src="bower_components/threejs/build/three.js"></script>
 <script src="/socket.io/socket.io.js"></script>
