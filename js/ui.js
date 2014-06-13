@@ -127,6 +127,8 @@ ui.createContainer = function(e, id) {
 	panel.style.position = "absolute";
 	var correctedX = e.layerX - ($(panel).width() / 2)
 	var correctedY = e.layerY - ($(panel).height() / 2)
+	if (correctedX < 300) correctedX = 320;
+	if (correctedY < 20) correctedY = 20;
 	panel.style.left = correctedX + 'px';
 	panel.style.top = correctedY + 'px';
 	// make it dragable and resizable
