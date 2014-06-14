@@ -5,11 +5,13 @@ ui.resizing = {};
 ui.hack = {};
 
 ui.showClusterLoadingInfo = function() {
-	$('#cluster-loading-info').removeClass('hidden');
+	$('#cluster-loading-info').addClass('show-animate');
+	$('#cluster-loading-info').removeClass('hidden-animate');
 }
 
 ui.hideClusterLoadingInfo = function() {
-	$('#cluster-loading-info').addClass('hidden');
+	$('#cluster-loading-info').removeClass('show-animate');
+	$('#cluster-loading-info').addClass('hidden-animate');
 }
 
 ui.createColorWheel = function(container) {

@@ -52,6 +52,7 @@ MasterRenderer.prototype.renderAll = function() {
 MasterRenderer.prototype.calculateMean = function(elements, domId, settings) {
 	// console.log("elements");
 	// console.log(elements);
+	ui.showClusterLoadingInfo();
 	myApp._serverCommunication.getClusteringAsync(elements, domId, settings, function(result) {
 		// console.log("Printing Clustering Result");
 		// console.log(result);
