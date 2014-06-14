@@ -25,6 +25,19 @@ function App(){
 	// ui.createColorWheel('body');
 	this.loadDataAsync(this.dataLoaded.bind(this));
 
+	$( document ).ready( function() {
+	  $( "#update" ).on( "click", function( e ) {
+	        var $icon = $( this ).find( ".glyphicon-refresh" ),
+	          animateClass = "icon-refresh-animate";
+	 				console.log("WOHOO");
+	        $icon.addClass( animateClass );
+	        // setTimeout is to indicate some async operation
+	        window.setTimeout( function() {
+	          $icon.removeClass( animateClass );
+	        }, 10000 );
+	    });    
+	});
+
 	// TODO VIS Hack This should go into the ui.js
 	$('#sidebar-container').affix({});
 	$('#opener').on('click', function() {		
@@ -172,6 +185,9 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 	}
 
 	myApp._listView._groups[position].children.push(clusteringEntry.name);
+	// Update the list to see the Clustering results
+	myApp._listView.updateList();
+	ui.dragging.attachDragLogic();
 	//console.log(clusteringEntry);
 }
 

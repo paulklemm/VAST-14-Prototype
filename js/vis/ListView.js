@@ -36,24 +36,27 @@ ListView.prototype.updateList = function () {
 					.text(function(d) { return myApp._data[d].description.detail; })
 
 	// This code does nothing actually - only when an update is called!
-	head.transition()
-	  .delay(1000)
-	  .style("opacity", 1);
+	// head.transition()
+	//   .delay(1000)
+	//   .style("opacity", 1);
 	head.exit()
-	    .transition()
-	    .duration(1000)
-	    .style("opacity", 0)
+	    // .transition()
+	    // .duration(1000)
+	    // .style("opacity", 0)
 	    .remove();
 
 	function toggleMenu() {
-		// HACK: This is done because the 
 		myApp._listView.updateList();
 		ui.dragging.attachDragLogic();
 		// console.log(this.__data__);
-		if (!this.__data__.selected)
+		if (!this.__data__.selected) {
 			d3.select(this).selectAll('p').attr('style', 'display:block');
-		else
+		}
+		else {
 			d3.select(this).selectAll('p').attr('style', 'display:none');
+		}
 		this.__data__.selected = !this.__data__.selected;
 	}
+
+	this.update = toggleMenu;
 }

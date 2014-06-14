@@ -4,6 +4,14 @@ ui.dragging = {};
 ui.resizing = {};
 ui.hack = {};
 
+ui.showClusterLoadingInfo = function() {
+	$('#cluster-loading-info').removeClass('hidden');
+}
+
+ui.hideClusterLoadingInfo = function() {
+	$('#cluster-loading-info').addClass('hidden');
+}
+
 ui.createColorWheel = function(container) {
 	var arc, data, padding, steps, r=80/2, pi = Math.PI;
 	padding = 2 * r / 100;
@@ -127,6 +135,7 @@ ui.createContainer = function(e, id) {
 	panel.style.position = "absolute";
 	var correctedX = e.layerX - ($(panel).width() / 2)
 	var correctedY = e.layerY - ($(panel).height() / 2)
+	// Correct if outside of the window (or overlapping the Navigation)
 	if (correctedX < 300) correctedX = 320;
 	if (correctedY < 20) correctedY = 20;
 	panel.style.left = correctedX + 'px';
