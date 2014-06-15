@@ -5,18 +5,6 @@
 	padding-left: 30px;
 }
 
-.hidden-animate {
-	visibility:hidden;
-	opacity:0;
-	transition:visibility 0s linear 0.5s,opacity 0.5s linear;
-}
-
-.show-animate {
-	visibility:visible;
-  opacity:1;
-  transition-delay:0s;
-}
-
 .spinner {
     -webkit-animation-name: spin;
     -webkit-animation-duration: 2000ms;
@@ -118,6 +106,18 @@ body { overflow-x: hidden; }
 
 .visible {
 	display: block;
+}
+
+.hidden-animate {
+	visibility:hidden;
+	opacity:0;
+	transition:visibility 0s linear 0.5s,opacity 0.5s linear;
+}
+
+.show-animate {
+	visibility:visible;
+  opacity:1;
+  transition-delay:0s;
 }
 
 #slide-panel {

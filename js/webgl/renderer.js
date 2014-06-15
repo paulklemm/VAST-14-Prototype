@@ -37,6 +37,7 @@ Renderer.prototype.processOlderGeometry = function(geometry) {
 }
 
 Renderer.prototype.init = function(){
+	var debug = false;
 	var angularSpeed = 0.2; 
 	var lastTime = 0;
 
@@ -139,7 +140,7 @@ Renderer.prototype.init = function(){
 	controls.addEventListener( 'change', render );
 
 	var scene = new THREE.Scene();
-	console.log("Scene: " + scene.id + " belongs to " + this._containerId);
+	if (debug) console.log("Scene: " + scene.id + " belongs to " + this._containerId);
 	if (debugScene == undefined)
 		debugScene = scene;
 
