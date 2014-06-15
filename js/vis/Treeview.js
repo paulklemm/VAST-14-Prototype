@@ -5,16 +5,72 @@ function Treeview(containerId, variableX, variableY){
 	this._containerId = containerId;
 	this._variableX = variableX;
 	this._variableY = variableY;
-	this._displayData = this.createDataset(true, false);
+	this._filteredData = undefined;
+	this._displayData = this.createDataset(true, false, myApp._data[this._variableX], myApp._data[this._variableY]);
+	this._treemap = undefined;
 	this.create(this._displayData);
+	// Append filter if there is any
+	if (myApp._masterFilter._filter != undefined)
+		this.appendFilter(myApp._masterFilter._filter);
 }
 
-Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels){
+// Recursive function which attaches a hashmap for each
+// Children node of the treemap object for parsing pleasure
+Treeview.prototype.recurse_createNodeObject = function(node) {
+	if (node.children != undefined) {
+		node.childrenHash = {};
+		for (var i = 0; i < node.children.length; i++) {
+			node.childrenHash[node.children[i].name] = node.children[i];
+			// Recursive Call on children function
+			this.recurse_createNodeObject(node.children[i]);
+		}
+	}
+}
+
+Treeview.prototype.removeFilter = function() {
+	this._filteredData = undefined;
+	$(this._containerId + ' .treeview-filter').remove();
+}
+
+Treeview.prototype.appendFilter = function(filter) {
+	// Remove old filters if there are any
+	this.removeFilter();
+	this._filteredData = this.createDataset(true, false, filter._data[this._variableX], filter._data[this._variableY]);
+
+	var treemap = d3.layout.treemap()
+		.size([this._helperwidth, this._helperheight])
+		.nodes(this._filteredData)
+
+	// Iterate over all existing rectangles
+	var rectangles = $(this._containerId + " .treeview-rect");
+	// Create Hash-access for arrays
+	this.recurse_createNodeObject(this._filteredData);
+	this.recurse_createNodeObject(rectangles[0].__data__);
+	for (var i = 0; i < rectangles.length; i++) {
+		var data = rectangles[i].__data__;
+		var structure = rectangles[i].getAttribute('structure').split(',');
+		// If we are at a leaf object and the filtered data set contains this value
+		if (structure.length == 3 && 
+				this._filteredData.childrenHash[structure[1]] != undefined &&
+				this._filteredData.childrenHash[structure[1]].childrenHash[structure[2]] != undefined) {
+			var dataFilter = this._filteredData.childrenHash[structure[1]].childrenHash[structure[2]];
+			// Get proper height
+			var filterHeight = ( parseInt(dataFilter.value) * parseInt(rectangles[i].getAttribute('height'))) / parseInt(data.value);
+			// Append new Rectangle!
+			d3.select(rectangles[i].parentElement).append('rect')
+				.attr('class', 'treeview-rect treeview-filter')
+				.attr('structure', structure)
+				.attr('x', rectangles[i].getAttribute('x'))
+				.attr('y', parseInt(rectangles[i].getAttribute('height')) - filterHeight + parseInt(rectangles[i].getAttribute('y')))
+				.attr('width', rectangles[i].getAttribute('width'))
+				.attr('height', filterHeight);
+		}
+	}
+}
+
+Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels, variableX, variableY){
 	if (nameAsLabels == undefined)
 		nameAsLabels = false;
-
-	var variableX = myApp._data[this._variableX];
-	var variableY = myApp._data[this._variableY];
 
 	var dataX;
 	var dataY;
@@ -64,7 +120,6 @@ Treeview.prototype.createDataset = function(removeErroreVariables, nameAsLabels)
 		}
 	}
 
-
 	// Create Data set as required from helper data set
 	xkeys = Object.keys(_helper);
 	for (var i = 0; i < xkeys.length; i++) {
@@ -108,6 +163,9 @@ Treeview.prototype.create = function (data) {
 		width = $(this._containerId).width() - margin.left - margin.right,
 		height = $(this._containerId).height() - margin.top - margin.bottom;
 
+	this._helperwidth = width;
+	this._helperheight = height;
+
 	// var canvas = d3.select("#canvas").append("svg")
 	var canvas = d3.select(this._containerId).append("svg")
 		.attr("width", width)
@@ -117,6 +175,9 @@ Treeview.prototype.create = function (data) {
 		.size([width, height])
 		.nodes(data)
 
+	this._treemap = treemap;
+	this._canvas = canvas;
+
 	var cells = canvas.selectAll(".cell")
 		.data(treemap)
 		.enter()
@@ -125,6 +186,15 @@ Treeview.prototype.create = function (data) {
 
 	cells.append("rect")
 		.attr('class', 'treeview-rect')
+		.attr("structure", function(d) {
+			var structure = [d.name];
+			var currentNode = d;
+			while(currentNode.parent != undefined) {
+				currentNode = currentNode.parent;
+				structure.unshift(currentNode.name);
+			}
+			return structure;
+		})
 		.attr("x", function(d) { return d.x; })
 		.attr("y", function(d) { return d.y; })
 		.attr("width", function(d) { return d.dx; })
@@ -137,6 +207,8 @@ Treeview.prototype.create = function (data) {
 		.style('font-size', '9px')
 		.attr("text-anchor", "middle")
 		.text(function(d) {return d.children ? null : dictionaryX[d.parent.name] + '>' + dictionaryY[d.name];})
+
+	this._cells = cells;
 
 	var foreignObject = cells.append("foreignObject")
 		.attr("x", function(d) { return d.x; })

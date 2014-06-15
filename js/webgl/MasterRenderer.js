@@ -6,6 +6,7 @@ function MasterRenderer () {
 	this._meshToRendererAssociation = {};
 	this._RendererToMeshAssociation = {};
 	this._currentReferenceMesh = undefined;
+	this._showingGlobalMean = true;
 	this._maxSimilarity = 4;
 	// Save Time on Mouse Down for renderer - used for click logic
 	this._mouseDownTime = 0;
@@ -27,10 +28,14 @@ MasterRenderer.prototype.calculateGlobalMean = function() {
 MasterRenderer.prototype.setNewReferenceMesh = function(mesh) {
 	if (mesh != undefined) {
 		// Set to Mean Mesh if the given Mesh is the same!
-		if (mesh.id == this._currentReferenceMesh.id)
+		if (mesh.id == this._currentReferenceMesh.id) {
 			this._currentReferenceMesh = this._geometryList['globalMean'];
-		else
+			this._showingGlobalMean = true;
+		}
+		else {
 			this._currentReferenceMesh = mesh;
+			this._showingGlobalMean = false;
+		}
 		this.renderAll();
 	}
 }

@@ -302,6 +302,7 @@ App.prototype.createMatchingVisualization = function(detail) {
 		myApp._pivotTable.update([detail.id]);
 		// Update registered Visualization Element
 		registeredVisualization.ids.push(detail.id);
+		registeredVisualization.visualization = vis;
 		// Update Heading
 		console.log(detail.containerId);
 		$(detail.containerId + ' .panel-heading').text(myApp._data[registeredVisualization.ids[0]].description.detail + " > " + myApp._data[registeredVisualization.ids[1]].description.detail);

@@ -3,8 +3,10 @@ function Barchart(containerId, variable){
 	this.type = 'Barchart';
 	this._containerId = containerId;
 	this._variable = variable;
+	this._filteredData = undefined;
 	this._displayData = this.createDataset(myApp._data[this._variable], true);
 	this.create();
+	// Append filter if there is any
 	if (myApp._masterFilter._filter != undefined)
 		this.appendFilter(myApp._masterFilter._filter);
 }
@@ -48,6 +50,7 @@ Barchart.prototype.createDataset = function(variable, removeErroreVariables){
 }
 
 Barchart.prototype.removeFilter = function() { 
+	this._filteredData = undefined;
 	$(this._containerId + ' .bar-filter').remove();
 }
 

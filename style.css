@@ -263,6 +263,10 @@ svg {
 	fill: #E0E0E0;
 }
 
+.treeview-filter {
+  opacity: 0.2;
+}
+
 .bar-filter {
   /*fill: steelblue;*/
   opacity: 0.1;
