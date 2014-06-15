@@ -222,9 +222,23 @@ Renderer.prototype.appendMouseEvents = function(renderer) {
 		var thisMeshName = myApp._masterRenderer._RendererToMeshAssociation[rendererName];
 		var thisMesh = myApp._masterRenderer._geometryList[thisMeshName];
 		myApp._masterRenderer.setNewReferenceMesh(thisMesh);
-		var variable = e.toElement.parentNode.getAttribute('variable');
-		var value = e.toElement.parentNode.getAttribute('value');
-		myApp.appendFilterToAllVisualizations(variable, value);
+
+		var foreignObject = e.toElement.parentNode;
+		// Now check whether it is a Treeview or a Barchart
+		if (foreignObject.getAttribute('vis-type') == 'Barchart') {
+			var variable = foreignObject.getAttribute('var');
+			var value = foreignObject.getAttribute('id');
+			// Create Filter
+			var select = {};
+			select[variable] = [value];
+			myApp._masterFilter.updateFilter(select);
+		}
+		else {
+			var select = {};
+			select[foreignObject.getAttribute('var_x')] = [foreignObject.getAttribute('id_x')];
+			select[foreignObject.getAttribute('var_y')] = [foreignObject.getAttribute('id_y')];
+			myApp._masterFilter.updateFilter(select);
+		}
 	});
 
 	renderer.domElement.addEventListener('mousedown', function(e) { 

@@ -5,6 +5,8 @@ function Barchart(containerId, variable){
 	this._variable = variable;
 	this._displayData = this.createDataset(myApp._data[this._variable], true);
 	this.create();
+	if (myApp._masterFilter._filter != undefined)
+		this.appendFilter(myApp._masterFilter._filter);
 }
 
 // Resize: https://groups.google.com/forum/#!topic/d3-js/mTBxTLi0q1o
@@ -171,8 +173,9 @@ Barchart.prototype.create = function(){
 	var foreignObject = enter.append("foreignObject")
 		.attr("x", function(d) { return x(d.name) + 60; })
 		.attr("id", function(d, i) { return 'renderWindow_' + d.name; })
-		.attr("variable", this._variable)
-		.attr("value", function(d, i) { return d.name;})
+		.attr("vis-type", 'Barchart')
+		.attr("var", this._variable)
+		.attr("id", function(d, i) { return d.name;})
 		.attr("width", x.rangeBand())
 		// .attr("y", function(d) { return y(d.frequency); })
 		.attr("y", 0 )

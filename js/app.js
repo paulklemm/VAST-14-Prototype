@@ -6,6 +6,7 @@ function App(){
 	this._visualizations = [];
 	this._heatmap = undefined;
 	this._serverCommunication = new ServerCommunication('http://localhost:8081');
+	this._masterFilter = new Masterfilter();
 	// this._serverCommunication = new ServerCommunication('isggate.cs.uni-magdeburg.de:8081');
 	this._masterRenderer = new MasterRenderer();
 	this._pivotTable = undefined;
@@ -110,22 +111,6 @@ App.prototype.compareGeometries = function(geometry1, geometry2) {
 	console.log("MeanDifferenceX: " + meanDifferenceX);
 	console.log("MeanDifferenceY: " + meanDifferenceY);
 	console.log("MeanDifferenceZ: " + meanDifferenceZ);
-}
-
-// ToDo add support for Treeviews!
-App.prototype.appendFilterToAllVisualizations = function(variable, value) {
-	console.log("Append Filter To All Visualizations. Variable: " + variable + ", Value: " + value);
-	//mySelection = new Filter({'SEX': ['2']});
-	//myApp._visualizations[0].visualization.appendFilter(mySelection);
-	for (var i = 0; i < myApp._visualizations.length; i++) {
-		// Create Filter
-		var select = {};
-		select[variable] = value;
-		var myFilter = new Filter(select);
-		if (myApp._visualizations[i].visualization.type == "Barchart") {
-			myApp._visualizations[i].visualization.appendFilter(myFilter);
-		}
-	}
 }
 
 App.prototype.addClusteringResultToDataset = function(result, name) {
