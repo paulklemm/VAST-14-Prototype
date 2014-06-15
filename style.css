@@ -263,6 +263,12 @@ svg {
 	fill: #E0E0E0;
 }
 
+.bar-filter {
+  /*fill: steelblue;*/
+  opacity: 0.1;
+  fill: rgb(86,192,224);
+}
+
 .bar:hover {
 	/*fill: brown;*/
 }

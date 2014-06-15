@@ -1,14 +1,14 @@
 // Constructor
 function Barchart(containerId, variable){
+	this.type = 'Barchart';
 	this._containerId = containerId;
 	this._variable = variable;
-	this._displayData = this.createDataset(true);
+	this._displayData = this.createDataset(myApp._data[this._variable], true);
 	this.create();
 }
 
 // Resize: https://groups.google.com/forum/#!topic/d3-js/mTBxTLi0q1o
-Barchart.prototype.createDataset = function(removeErroreVariables){
-	var variable = myApp._data[this._variable];
+Barchart.prototype.createDataset = function(variable, removeErroreVariables){
 	var data;
 	if (variable.description.dataType == 'metric')
 		data = variable.binnedData.data; // Use binned data for data!
@@ -45,11 +45,43 @@ Barchart.prototype.createDataset = function(removeErroreVariables){
 	return result;
 }
 
+Barchart.prototype.removeFilter = function() { 
+	$(this._containerId + ' .bar-filter').remove();
+}
+
+Barchart.prototype.appendFilter = function(filter) {
+	// Remove old filters if there are any
+	this.removeFilter();
+
+	var height = this._helperHeight;
+	var width = this._helperwidth;
+
+	var x = d3.scale.ordinal()
+			.rangeRoundBands([0, width], .1);
+
+	var y = d3.scale.linear()
+			.range([height, 0]);
+	x.domain(this._displayData.map(function(d) { return d.name; }));
+	y.domain([0, d3.max(this._displayData, function(d) { return d.frequency; })]);
+
+	var filteredData = this.createDataset(filter._data[this._variable], true);
+	var enter = this._svg.selectAll(".bar-filter").data(filteredData).enter();
+	enter.append("rect")
+			.attr("class", "bar-filter")
+			.attr("x", function(d) { return x(d.name); })
+			.attr("width", x.rangeBand())
+			.attr("y", function(d) { return y(d.frequency); })
+			.attr("height", function(d) {return height - y(d.frequency); });
+}
+
 Barchart.prototype.create = function(){
 
 	var margin = {top: 20, right: 20, bottom: 30, left: 60},
 			width = $(this._containerId).width() - margin.left - margin.right,
 			height = $(this._containerId).height() - margin.top - margin.bottom;
+
+	this._helperHeight = height;
+	this._helperwidth = width;
 
 	var x = d3.scale.ordinal()
 			.rangeRoundBands([0, width], .1);
@@ -125,6 +157,8 @@ Barchart.prototype.create = function(){
 			.style("text-anchor", "end")
 			.text("Number of Subjects");
 
+	this._svg = svg;
+
 	var enter = svg.selectAll(".bar").data(this._displayData).enter();
 	enter.append("rect")
 			.attr("class", "bar")
@@ -137,11 +171,12 @@ Barchart.prototype.create = function(){
 	var foreignObject = enter.append("foreignObject")
 		.attr("x", function(d) { return x(d.name) + 60; })
 		.attr("id", function(d, i) { return 'renderWindow_' + d.name; })
+		.attr("variable", this._variable)
+		.attr("value", function(d, i) { return d.name;})
 		.attr("width", x.rangeBand())
 		// .attr("y", function(d) { return y(d.frequency); })
 		.attr("y", 0 )
 		.attr("height", function(d) { return height - y(d.frequency); });
-
 
 	// Request Render Window
 	var elementList = {};

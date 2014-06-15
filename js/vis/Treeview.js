@@ -1,6 +1,7 @@
 // Constructor
 // function Treeview(containerId, variables){
 function Treeview(containerId, variableX, variableY){
+  this.type = 'Treeview';
 	this._containerId = containerId;
 	this._variableX = variableX;
 	this._variableY = variableY;

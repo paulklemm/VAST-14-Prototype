@@ -222,6 +222,9 @@ Renderer.prototype.appendMouseEvents = function(renderer) {
 		var thisMeshName = myApp._masterRenderer._RendererToMeshAssociation[rendererName];
 		var thisMesh = myApp._masterRenderer._geometryList[thisMeshName];
 		myApp._masterRenderer.setNewReferenceMesh(thisMesh);
+		var variable = e.toElement.parentNode.getAttribute('variable');
+		var value = e.toElement.parentNode.getAttribute('value');
+		myApp.appendFilterToAllVisualizations(variable, value);
 	});
 
 	renderer.domElement.addEventListener('mousedown', function(e) { 

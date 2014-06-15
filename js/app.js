@@ -112,6 +112,22 @@ App.prototype.compareGeometries = function(geometry1, geometry2) {
 	console.log("MeanDifferenceZ: " + meanDifferenceZ);
 }
 
+// ToDo add support for Treeviews!
+App.prototype.appendFilterToAllVisualizations = function(variable, value) {
+	console.log("Append Filter To All Visualizations. Variable: " + variable + ", Value: " + value);
+	//mySelection = new Filter({'SEX': ['2']});
+	//myApp._visualizations[0].visualization.appendFilter(mySelection);
+	for (var i = 0; i < myApp._visualizations.length; i++) {
+		// Create Filter
+		var select = {};
+		select[variable] = value;
+		var myFilter = new Filter(select);
+		if (myApp._visualizations[i].visualization.type == "Barchart") {
+			myApp._visualizations[i].visualization.appendFilter(myFilter);
+		}
+	}
+}
+
 App.prototype.addClusteringResultToDataset = function(result, name) {
 	var keys = Object.keys(result);
 	var keyMap = myApp._data.zz_nr.data;
@@ -212,7 +228,7 @@ App.prototype.dataLoaded = function(){
 	// this._pivotTable = new PivotTable('#pivotTable', this._data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
 	this._statistics.removeFaultyData(this._data);
-	console.log("Calculating global Mean ...");
+	console.log("Calculating global mean ...");
 	this._masterRenderer.calculateGlobalMean();
 	console.log("Calculating bins ...");
 	this._statistics.createBinsForAllMetricVariables(this._data);
