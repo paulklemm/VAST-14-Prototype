@@ -15,7 +15,7 @@ function App(){
 	this._oddsRatioTableMatrix = undefined;
 	this._zz_nrHash = undefined
 	this._cramersVMatrix = undefined;
-	this._loadAll = false;
+	this._loadAll = true;
 	this._saveTimeOnStartup = true; // this reads cramersV from disk
 
 	debugMeshList = [];
@@ -74,6 +74,24 @@ function App(){
   });
 };
 
+App.prototype.createVariableForStrongBackpain = function() {
+	var length = this._data['Rueckenschmerz_3Monate_staerke'].data.length;
+	var newVar = {};
+	var data = [];
+	for (var i = 0; i < length; i++)
+		if (parseInt(this._data['Rueckenschmerz_3Monate_staerke'].data[i]) > 6 &&
+				parseInt(this._data['Rueckenschmerz_3Monate_staerke'].data[i]) < 11)
+			data.push("1");
+		else
+			data.push("0");
+	newVar.data = data;
+	newVar.name = "Rueckenschmerz_stark";
+	newVar.invalidIndices = [];
+	var dictionary = {'1': 'yes', '0': 'no'}
+	newVar.description = {"dataType": 'ordinal', "detail": "Strong back pain", "name": "Rueckenschmerz_stark", "dictionary": dictionary};
+	this._data["Rueckenschmerz_stark"] = newVar;
+}
+
 App.prototype.createVariableForAllSubjects = function() {
 	var length = this._data.zz_nr.data.length;
 	var newVar = {};
@@ -81,9 +99,10 @@ App.prototype.createVariableForAllSubjects = function() {
 	for (var i = 0; i < length; i++)
 		data.push(0);
 	newVar.data = data;
+	newVar.name = "All Subjects";
 	newVar.invalidIndices = [];
 	var dictionary = {'0': 'all'}
-	newVar.description = {"dataType": 'ordinal', "detail": "All Variables", "name": "all", "dictionary": dictionary};
+	newVar.description = {"dataType": 'ordinal', "detail": "All Subjects", "name": "all", "dictionary": dictionary};
 	this._data["all"] = newVar;
 }
 
@@ -139,7 +158,7 @@ App.prototype.addClusteringResultToDataset = function(result, name) {
 	}
 
 	for (var i = 0; i < clusteringEntry.data.length; i++)
-		if (clusteringEntry.data[i] == undefined) {
+		if (clusteringEntry.data[i] == undefined || clusteringEntry.data[i] == "null") {
 			clusteringEntry.data[i] = 99999;
 			clusteringEntry.invalidIndices[i] = true;
 		}
@@ -212,6 +231,7 @@ App.prototype.dataLoaded = function(){
 
 	//this.constructCrossfilterDataset();
 	this.createVariableForAllSubjects(); // One Variable which contains all subjects - used for clustering
+	this.createVariableForStrongBackpain();
 	this.loadGroupDataAsync(ui.createSidebar);
 	// this._pivotTable = new PivotTable('#pivotTable', this._data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
