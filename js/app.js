@@ -15,6 +15,7 @@ function App(){
 	this._oddsRatioTableMatrix = undefined;
 	this._zz_nrHash = undefined
 	this._cramersVMatrix = undefined;
+	this._loadAll = false;
 	this._saveTimeOnStartup = true; // this reads cramersV from disk
 
 	debugMeshList = [];
@@ -203,6 +204,8 @@ App.prototype.dataLoaded = function(){
 	var datakeys = Object.keys(this._data);
 	for (var i = 0; i < datakeys.length; i++) {
 		this._data[datakeys[i]].data = this._data[datakeys[i]].dataT0;
+		if (this._loadAll)
+			this._data[datakeys[i]].data = this._data[datakeys[i]].data.concat(this._data[datakeys[i]].dataS2);
 		if (this._data[datakeys[i]].description.cohort != 'all')
 			delete this._data[datakeys[i]];
 	}
@@ -227,24 +230,19 @@ App.prototype.dataLoaded = function(){
 	// Create Cramers V for all subjects
 	if (this._saveTimeOnStartup)
 		// d3.json("data/cramersVMatrix.json", function(json) {
-		d3.json("data/cramersVMatrix_all.json", function(json) {
-			this._cramersVMatrix = json;
-			this._heatmap = new Heatmap('#heatmap-container');
-			// Remove Image Parameters from Cramers Matrix (they have poor binning
-			// and screw up the cramersV test)
-			// var keys = Object.keys(this._cramersVMatrix);
-			// var remove = {"Mean_Curvature": true, "Mean_Torsion": true, "Mean_Curvature_Coronal": true, "Mean_Curvature_Sagittal": true, "Mean_Curvature_Transverse": true, "Curvature_Angle": true, "Curvature_Angle_Sagittal": true, "Curvature_Angle_Coronal": true, "Curvature_Angle_Transverse": true}
-			// for (var i = 0; i < keys.length; i++) {
-			// 	if ( remove[keys[i]] == true)
-			// 		delete this._cramersVMatrix[keys[i]];
-			// 	else {
-			// 		var innerKeys = Object.keys(this._cramersVMatrix[keys[i]]);
-			// 		for (var j = 0; j < innerKeys.length; j++)
-			// 			if ( remove[innerKeys[j]] == true)
-			// 				delete this._cramersVMatrix[keys[i]][innerKeys[j]];
-			// 	}
-			// }
-		}.bind(this));
+		if (this._loadAll){
+			d3.json("data/cramersVMatrix_all_S2T0.json", function(json) {
+				this._cramersVMatrix = json;
+				this._heatmap = new Heatmap('#heatmap-container');
+			}.bind(this));
+		}
+		else {
+			d3.json("data/cramersVMatrix_all.json", function(json) {
+			//d3.json("data/cramersVMatrix_all_S2T0.json", function(json) {
+				this._cramersVMatrix = json;
+				this._heatmap = new Heatmap('#heatmap-container');
+			}.bind(this));
+	}
 	else
 		this._cramersVMatrix = this._statistics.getCramerVMatrix(this._data);
 

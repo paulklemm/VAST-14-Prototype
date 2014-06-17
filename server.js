@@ -158,6 +158,8 @@ var loadAllMeshesAsync = function(callback) {
 		var validIds = {};
 		for (var i = 0; i < ship['zz_nr'].dataT0.length; i++)
 			validIds[ship['zz_nr'].dataT0[i]] = true;
+		for (var i = 0; i < ship['zz_nr'].dataS2.length; i++)
+			validIds[ship['zz_nr'].dataS2[i]] = true;
 		
 		getMeshFileNamesAsync(function(files) {
 			// preprocess files array to only include meshes needed
