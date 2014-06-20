@@ -74,6 +74,38 @@ function App(){
   });
 };
 
+App.prototype.createVariableForSpineAttritionYes = function() {
+	var length = this._data['Abnutzungserscheinungen_Wirbelsaule'].data.length;
+	var newVar = {};
+	var data = [];
+	for (var i = 0; i < length; i++)
+		if (this._data['Abnutzungserscheinungen_Wirbelsaule'].data[i] == '1')
+			data.push('1');
+
+	newVar.data = data;
+	newVar.name = "Abnutzungserscheinungen_Wirbelsaule_Ja";
+	newVar.invalidIndices = [];
+	var dictionary = {'1': 'yes', '0': 'no'}
+	newVar.description = {"dataType": 'ordinal', "detail": "Abnutzungserscheinungen Wirbelsaule Ja", "name": "Abnutzungserscheinungen_Wirbelsaule_Ja", "dictionary": dictionary};
+	this._data["Abnutzungserscheinungen_Wirbelsaule_Ja"] = newVar;
+}
+
+App.prototype.createVariableForSpineAttritionNo = function() {
+	var length = this._data['Abnutzungserscheinungen_Wirbelsaule'].data.length;
+	var newVar = {};
+	var data = [];
+	for (var i = 0; i < length; i++)
+		if (this._data['Abnutzungserscheinungen_Wirbelsaule'].data[i] == '2')
+			data.push('1');
+
+	newVar.data = data;
+	newVar.name = "Abnutzungserscheinungen_Wirbelsaule_Nein";
+	newVar.invalidIndices = [];
+	var dictionary = {'1': 'yes', '0': 'no'}
+	newVar.description = {"dataType": 'ordinal', "detail": "Abnutzungserscheinungen Wirbelsaule Nein", "name": "Abnutzungserscheinungen_Wirbelsaule_Nein", "dictionary": dictionary};
+	this._data["Abnutzungserscheinungen_Wirbelsaule_Nein"] = newVar;
+}
+
 App.prototype.createVariableForStrongBackpain = function() {
 	var length = this._data['Rueckenschmerz_3Monate_staerke'].data.length;
 	var newVar = {};
@@ -232,6 +264,8 @@ App.prototype.dataLoaded = function(){
 	//this.constructCrossfilterDataset();
 	this.createVariableForAllSubjects(); // One Variable which contains all subjects - used for clustering
 	this.createVariableForStrongBackpain();
+	this.createVariableForSpineAttritionYes();
+	this.createVariableForSpineAttritionNo();
 	this.loadGroupDataAsync(ui.createSidebar);
 	// this._pivotTable = new PivotTable('#pivotTable', this._data, ["S2_CHRO_22A", "SEX_SHIP2", "S2_ALKO_02"]);
 	this._pivotTable = new PivotTable('#pivotTable', this._data);
@@ -253,7 +287,7 @@ App.prototype.dataLoaded = function(){
 		if (this._loadAll){
 			d3.json("data/cramersVMatrix_all_S2T0.json", function(json) {
 				this._cramersVMatrix = json;
-				this._heatmap = new Heatmap('#heatmap-container');
+				this._heatmap = new Heatmap('#heatmap-container', myApp._cramersVMatrix);
 			}.bind(this));
 		}
 		else {

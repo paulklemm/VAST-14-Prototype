@@ -163,6 +163,9 @@ Treeview.prototype.create = function (data) {
 		width = $(this._containerId).width() - margin.left - margin.right,
 		height = $(this._containerId).height() - margin.top - margin.bottom;
 
+	// VIS SCREENSHOT
+	// height = 400;
+
 	this._helperwidth = width;
 	this._helperheight = height;
 
